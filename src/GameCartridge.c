@@ -133,11 +133,11 @@ bool loadCartridge(char *cart){
     FILE *fp = fopen(cart, "r");
 
     if(!fp){
-        printf("Failed to open: %s\n", cart);
+        printf("\tERR: FAIL OPEN: %s\n", cart);
         return false;
     }
 
-    printf("Opened: %s\n", cartridge.filename);
+    printf("INFO: OPEN: %s\n", cartridge.filename);
 
     fseek(fp, 0, SEEK_END);
     cartridge.romSize = ftell(fp);
@@ -151,7 +151,7 @@ bool loadCartridge(char *cart){
     cartridge.header = (romHeader *)(cartridge.romData + 0x100);
     cartridge.header->title[15] = 0;
 
-    printf("ROM Loaded:\n");
+    printf("INFO: ROM Loaded:\n");
     printf("\t Title        : %s\n", cartridge.header->title);
     printf("\t Type         : %2.2X (%s)\n", cartridge.header->type, getCartType());
     printf("\t ROM Size     : %d KB\n", 32 << cartridge.header->romSize);

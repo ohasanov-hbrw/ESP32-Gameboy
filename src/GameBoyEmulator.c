@@ -36,10 +36,10 @@ int runEmulator(int argc, char **argv){
         return -2;
     }
 
-    printf("Cart loaded..\n");
+    printf("INFO: Cart loaded..\n");
 
     SDL_Init(SDL_INIT_VIDEO);
-    printf("SDL INIT\n");
+    printf("INFO: SDL INIT\n");
 
     initCpu();
     

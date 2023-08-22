@@ -1,19 +1,21 @@
 #include <Cpu.h>
 #include <Bus.h>
+#include <GameBoyEmulator.h>
 
 cpuContext CPU = {0};
 
 void initCpu(){
-
+    CPU.registers.pc = 0x100;
 }
 
 static void fetchInstruction(){
     CPU.currentOpcode = readBus(CPU.registers.pc);
+
     CPU.registers.pc++;
     CPU.currentInstruction = getInstructionFromOpcode(CPU.currentOpcode);
 
     if(CPU.currentInstruction == NULL){
-        printf("unavaliable instruction on opcode: %02X \n", CPU.currentOpcode);
+        printf("\tERR: UNAV OPCD: 0x%02X \n", CPU.currentOpcode);
         exit(-31);
     }
 }
@@ -41,22 +43,24 @@ static void fetchData(){
             return;
         }
         default:
-            printf("unknown addressing mode: %d \n", CPU.currentInstruction->mode);
+            printf("\tERR: UNKN ADDR MODE: %d \n", CPU.currentInstruction->mode);
             exit(-31);
             return;
     }
 }
 
 static void execute(){
-    printf("executing instructions is not implemented yet!\n");
+    printf("\tTODO: EXEC NOT IMPL\n");
 }
 
 bool stepCpu(){
     if(!CPU.halted){
+        u16 pc = CPU.registers.pc;
         fetchInstruction();
         fetchData();
+        printf("INFO: EXEC INST: 0x%02X  PC: 0x%04X\n", CPU.currentOpcode, pc);
         execute();
     }
     
-    return false;
+    return true;
 }
