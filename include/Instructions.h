@@ -110,7 +110,7 @@ typedef struct{
     registerType reg1;
     registerType reg2;
     conditionType condition;
-    u8 param;
+    u8 parameter;
 }instruction;
 
 instruction *getInstructionFromOpcode(u8 opcode);

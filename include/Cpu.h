@@ -44,8 +44,10 @@ typedef void (*InstructionProcess) (cpuContext *);
 
 InstructionProcess instructionGetProcessor(instructionType type);
 
-#define CPUFLAGZ BIT(CPU->registers.f, 7)
-#define CPUFLAGC BIT(CPU->registers.f, 4)
+#define CPU_FLAG_Z BIT(CPU->registers.f, 7)
+#define CPU_FLAG_N BIT(CPU->registers.f, 6)
+#define CPU_FLAG_H BIT(CPU->registers.f, 5)
+#define CPU_FLAG_C BIT(CPU->registers.f, 4)
 
 void cpuSetFlags(cpuContext *, char , char , char , char );
 
