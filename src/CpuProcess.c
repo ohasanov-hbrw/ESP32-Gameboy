@@ -18,19 +18,28 @@ static void ldProcess(cpuContext *CPU){
             waitForCPUCycle(1);
         }
         else{
-            printf("INFO: WRT BUS: 0x%04X\n", CPU->memoryDestination);
             writeBus(CPU->memoryDestination, CPU->fetchedData);
         }
         return;
     }
     if(CPU->currentInstruction->mode == AM_HL_SPR){
         u8 hFlag = (readRegister(CPU->currentInstruction->reg2) & 0xF) + (CPU->fetchedData & 0xF) >= 0x10;
-        u8 cFlag = (readRegister(CPU->currentInstruction->reg2) & 0xFF) + (CPU->fetchedData & 0xFF) >= 0x10;
+        u8 cFlag = (readRegister(CPU->currentInstruction->reg2) & 0xFF) + (CPU->fetchedData & 0xFF) >= 0x100;
         cpuSetFlags(&CPU, 0, 0, hFlag, cFlag);
         setRegister(CPU->currentInstruction->reg1, readRegister(CPU->currentInstruction->reg2) + (char)CPU->fetchedData);
         return;
     }
     setRegister(CPU->currentInstruction->reg1, CPU->fetchedData);
+}
+
+static void ldhProcess(cpuContext *CPU){
+    if(CPU->currentInstruction->reg1 == RT_A){
+        setRegister(CPU->currentInstruction->reg1, readBus(0xFF00 | CPU->fetchedData));
+    }
+    else{
+        writeBus(0xFF00 | CPU->fetchedData, CPU->registers.a);
+    }
+    waitForCPUCycle(1);
 }
 
 static bool checkCondition(cpuContext *CPU){
@@ -88,6 +97,7 @@ static InstructionProcess processors[] = {
     [IN_NONE] = noneProcess,
     [IN_NOP] = nopProcess,
     [IN_LD] = ldProcess,
+    [IN_LDH] = ldhProcess,
     [IN_JP] = jpProcess,
     [IN_DI] = diProcess,
     [IN_XOR] = xorProcess

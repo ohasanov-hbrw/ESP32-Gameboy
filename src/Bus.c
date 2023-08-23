@@ -1,6 +1,6 @@
 #include <Bus.h>
 #include <GameCartridge.h>
-
+#include <GBRam.h>
 
 // 0x0000 - 0x3FFF : ROM Bank 0
 // 0x4000 - 0x7FFF : ROM Bank 1 - Switchable
@@ -16,13 +16,42 @@
 // 0xFF00 - 0xFF7F : I/O Registers
 // 0xFF80 - 0xFFFE : Zero Page
 
-
+ 
 
 u8 readBus(u16 address){
     if(address < 0x8000){
         return readFromCartridge(address);
     }
-    printf("\tERR: READ BUS8: 0x%04X\n", address);
+    else if(address < 0xA000){
+        printf("\tERR: READ BUS8: 0x%04X\n", address);
+        NO_IMPLEMENTATION
+    }
+    else if(address < 0xC000){
+        return readFromCartridge(address);
+    }
+    else if(address < 0xE000){
+        return readFromWram(address);
+    }
+    else if(address < 0xFE00){
+        return 0;
+    }
+    else if(address < 0xFEA0){
+        printf("\tERR: READ BUS8: 0x%04X\n", address);
+        NO_IMPLEMENTATION
+    }
+    else if(address < 0xFF00){
+        return 0;
+    }
+    else if(address < 0xFF80){
+        printf("\tERR: READ BUS8: 0x%04X\n", address);
+        NO_IMPLEMENTATION
+    }
+    else if(address == 0xFFFF){
+        return readInterruptRegister();
+    }
+    else{
+        readFromHram(address);
+    }
 }
 
 void writeBus(u16 address, u8 value){
@@ -30,7 +59,40 @@ void writeBus(u16 address, u8 value){
         writeToCartridge(address, value);
         return;
     }
-    printf("\tERR: WRT BUS8: 0x%04X 0x%02X\n", address, value);
+    else if(address < 0xA000){
+        printf("\tERR: WRT BUS8: 0x%04X 0x%02X\n", address, value);
+        NO_IMPLEMENTATION
+    }
+    else if(address < 0xC000){
+        writeToCartridge(address, value);
+        return;
+    }
+    else if(address < 0xE000){
+        writeToWram(address, value);
+        return;
+    }
+    else if(address < 0xFE00){
+        return;
+    }
+    else if(address < 0xFEA0){
+        printf("\tERR: WRT BUS8: 0x%04X 0x%02X\n", address, value);
+        NO_IMPLEMENTATION
+    }
+    else if(address < 0xFF00){
+        return;
+    }
+    else if(address < 0xFF80){
+        printf("\tERR: WRT BUS8: 0x%04X 0x%02X\n", address, value);
+        return;
+        //NO_IMPLEMENTATION
+    }
+    else if(address == 0xFFFF){
+        setInterruptRegister(value);
+    }
+    else{
+        writeToHram(address, value);
+    }
+    
 }
 
 void writeBus16(u16 address, u16 value){

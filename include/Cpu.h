@@ -33,6 +33,8 @@ typedef struct{
     bool halted;
     bool steppingMode;
 
+    u8 interruptRegister;
+
 }cpuContext;
 
 void initCpu();
@@ -49,3 +51,8 @@ void cpuSetFlags(cpuContext *, char , char , char , char );
 
 u16 readRegister(registerType);
 void setRegister(registerType, u16);
+
+cpuRegisters* getRegisters();
+
+u8 readInterruptRegister();
+void setInterruptRegister(u8);

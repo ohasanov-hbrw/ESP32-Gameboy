@@ -56,3 +56,7 @@ void setRegister(registerType rt, u16 val){
         case RT_NONE: break;
     }
 }
+
+cpuRegisters* getRegisters(){
+    return &CPU.registers;
+}
