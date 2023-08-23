@@ -2,5 +2,7 @@
 
 #include <Utils.h>
 
-u8 readBus(u16 address);
-void writeBus(u16 address, u8 value);
+u8 readBus(u16);
+void writeBus(u16, u8);
+void writeBus16(u16, u16);
+u16 readBus16(u16);

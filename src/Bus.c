@@ -1,4 +1,5 @@
 #include <Bus.h>
+#include <GameCartridge.h>
 
 
 // 0x0000 - 0x3FFF : ROM Bank 0
@@ -21,8 +22,7 @@ u8 readBus(u16 address){
     if(address < 0x8000){
         return readFromCartridge(address);
     }
-
-    NO_IMPLEMENTATION
+    printf("\tERR: READ BUS8: 0x%04X\n", address);
 }
 
 void writeBus(u16 address, u8 value){
@@ -30,6 +30,17 @@ void writeBus(u16 address, u8 value){
         writeToCartridge(address, value);
         return;
     }
+    printf("\tERR: WRT BUS8: 0x%04X 0x%02X\n", address, value);
+}
 
-    NO_IMPLEMENTATION
+void writeBus16(u16 address, u16 value){
+    writeBus(address + 1, (value >> 8) & 0xFF);
+    writeBus(address, value & 0xFF);
+}
+
+u16 readBus16(u16 address) {
+    u16 low = readBus(address);
+    u16 high = readBus(address + 1);
+
+    return low | (high << 8);
 }

@@ -24,6 +24,8 @@ typedef struct{
 
     bool destinationIsMemory;
 
+    bool interruptsEnabled;
+
     u8 currentOpcode;
 
     instruction *currentInstruction;
@@ -35,3 +37,15 @@ typedef struct{
 
 void initCpu();
 bool stepCpu();
+
+typedef void (*InstructionProcess) (cpuContext *);
+
+InstructionProcess instructionGetProcessor(instructionType type);
+
+#define CPUFLAGZ BIT(CPU->registers.f, 7)
+#define CPUFLAGC BIT(CPU->registers.f, 4)
+
+void cpuSetFlags(cpuContext *, char , char , char , char );
+
+u16 readRegister(registerType);
+void setRegister(registerType, u16);

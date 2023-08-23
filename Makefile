@@ -17,7 +17,8 @@ files:
 	mkdir -p bin object
 
 run: $(name)
-	bin/$(name) rom.gb
+#	bin/$(name) rom.gb
+	bin/$(name) cpu_instrs.gb
 
 $(name): $(objects)
 	$(CC) -o bin/$(name) $^ $(ldflags)

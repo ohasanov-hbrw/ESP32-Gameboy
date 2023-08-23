@@ -82,6 +82,7 @@ typedef enum{
     IN_EI,
     IN_RST,
     IN_ERR,
+    //CB instructions...
     IN_RLC, 
     IN_RRC,
     IN_RL, 
@@ -93,7 +94,7 @@ typedef enum{
     IN_BIT, 
     IN_RES, 
     IN_SET
-}inputType;
+}instructionType;
 
 typedef enum{
     CT_NONE,
@@ -104,14 +105,14 @@ typedef enum{
 }conditionType;
 
 typedef struct{
-    inputType type;
+    instructionType type;
     addressMode mode;
     registerType reg1;
     registerType reg2;
-    conditionType cond;
+    conditionType condition;
     u8 param;
 }instruction;
 
 instruction *getInstructionFromOpcode(u8 opcode);
 
-char *instructionName(inputType t);
+char *instructionName(instructionType t);

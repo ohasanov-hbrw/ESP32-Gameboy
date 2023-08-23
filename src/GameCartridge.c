@@ -174,5 +174,6 @@ u8 readFromCartridge(u16 address){
 }
 
 void writeToCartridge(u16 address, u8 value){
+    printf("\tERR: WRT CART: 0x%04X 0x%02X\n", address, value);
     NO_IMPLEMENTATION
 }
