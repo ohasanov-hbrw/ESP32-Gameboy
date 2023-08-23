@@ -1,4 +1,5 @@
 #include <Cpu.h>
+#include <Utils.h>
 
 extern cpuContext CPU;
 
@@ -56,6 +57,44 @@ void setRegister(registerType rt, u16 val){
         case RT_NONE: break;
     }
 }
+
+
+u8 readRegister8(registerType rt){
+    switch(rt){
+        case RT_A: return CPU.registers.a;
+        case RT_F: return CPU.registers.f;
+        case RT_B: return CPU.registers.b;
+        case RT_C: return CPU.registers.c;
+        case RT_D: return CPU.registers.d;
+        case RT_E: return CPU.registers.e;
+        case RT_H: return CPU.registers.h;
+        case RT_L: return CPU.registers.l;
+        case RT_HL: {
+            return readBus(readRegister(RT_HL));
+        }
+        default:
+            printf("\tERR: INVALID REG8: %d\n", rt);
+            NO_IMPLEMENTATION
+    }
+}
+
+void setRegister8(registerType rt, u8 value){
+    switch(rt){
+        case RT_A: CPU.registers.a = value & 0xFF; break;
+        case RT_F: CPU.registers.f = value & 0xFF; break;
+        case RT_B: CPU.registers.b = value & 0xFF; break;
+        case RT_C: CPU.registers.c = value & 0xFF; break;
+        case RT_D: CPU.registers.d = value & 0xFF; break;
+        case RT_E: CPU.registers.e = value & 0xFF; break;
+        case RT_H: CPU.registers.h = value & 0xFF; break;
+        case RT_L: CPU.registers.l = value & 0xFF; break;
+        case RT_HL: writeBus(readRegister(RT_HL), value); break;
+        default:
+            printf("\tERR: INVALID REG8: %d\n", rt);
+            NO_IMPLEMENTATION
+    }
+}
+
 
 cpuRegisters* getRegisters(){
     return &CPU.registers;

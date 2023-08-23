@@ -4,6 +4,24 @@
 #include <Stack.h>
 
 
+registerType registerTypeLookup[] = {
+    RT_B,
+    RT_C,
+    RT_D,
+    RT_E,
+    RT_H,
+    RT_L,
+    RT_HL,
+    RT_A
+};
+
+registerType decodeRegister(u8 reg){
+    if(reg > 0b111){
+        return RT_NONE;
+    }
+    return registerTypeLookup[reg];
+}
+
 static bool is16Bit(registerType rt){
     return rt >= RT_AF;
 }
@@ -291,6 +309,100 @@ static void cpProcess(cpuContext *CPU){
     cpuSetFlags(CPU, value == 0, 1, ((int)CPU->registers.a & 0x0F) - ((int)CPU->fetchedData & 0x0F) < 0, value < 0);
 }
 
+static void cbProcess(cpuContext *CPU){
+    u8 operation = CPU->fetchedData;
+    registerType reg = decodeRegister(operation & 0b111);
+    u8 bit = (operation >> 3) & 0b111;
+    u8 bitOperation = (operation >> 6) & 0b11;
+    u8 registerValue = readRegister8(reg);
+
+    waitForCPUCycle(1);
+    if(reg == RT_HL){
+        waitForCPUCycle(2);
+    }
+
+    switch(bitOperation){
+        case 1:
+            cpuSetFlags(CPU, !(registerValue & (1 << bit)), 0, 1, -1);
+            return;
+        case 2:
+            registerValue &= ~(1 << bit);
+            setRegister8(reg, registerValue);
+            return;    
+        case 3:
+            registerValue |= (1 << bit);
+            setRegister8(reg, registerValue);
+            return;
+    }
+
+    bool cFlag = CPU_FLAG_C;
+
+    switch(bit){
+        case 0:{
+            bool cSet = false;
+            u8 result = (registerValue << 1) & 0xFF;
+            if((registerValue & (1 << 7)) != 0){
+                result |= 1;
+                cSet = true;
+            }
+            setRegister8(reg, result);
+            cpuSetFlags(CPU, result == 0, false, false, cSet);
+            return;
+        }
+        case 1:{
+            u8 oldValue = registerValue;
+            registerValue >>= 1;
+            registerValue |= (oldValue << 7);
+            setRegister8(reg, registerValue);
+            cpuSetFlags(CPU, !registerValue, false, false, oldValue & 1);
+            return;
+        }
+        case 2:{
+            u8 oldValue = registerValue;
+            registerValue <<= 1;
+            registerValue |= cFlag;
+            setRegister8(reg, registerValue);
+            cpuSetFlags(CPU, !registerValue, false, false, !!(oldValue & 0x80));
+            return;
+        }
+        case 3:{
+            u8 oldValue = registerValue;
+            registerValue >>= 1;
+            registerValue |= (cFlag << 7);
+            setRegister8(reg, registerValue);
+            cpuSetFlags(CPU, !registerValue, false, false, oldValue & 1);
+            return;
+        }
+        case 4:{
+            u8 oldValue = registerValue;
+            registerValue <<= 1;
+            setRegister8(reg, registerValue);
+            cpuSetFlags(CPU, !registerValue, false, false, !!(oldValue & 0x80));
+            return;
+        }
+        case 5:{
+            u8 oldValue = (int8_t)registerValue >> 1;
+            setRegister8(reg, oldValue);
+            cpuSetFlags(CPU, !oldValue, false, false, registerValue & 1);
+            return;
+        }
+        case 6:{
+            registerValue = ((registerValue & 0xF0) >> 4) | ((registerValue & 0xF) << 4);
+            setRegister8(reg, registerValue);
+            cpuSetFlags(CPU, registerValue == 0, false, false, false);
+            return;
+        }
+        case 7:{
+            u8 oldValue = registerValue >> 1;
+            setRegister8(reg, oldValue);
+            cpuSetFlags(CPU, !oldValue, false, false, registerValue & 1);
+            return;
+        }
+    }
+    printf("\tERR: INVALID CB: 0x%02X\n", operation);
+    NO_IMPLEMENTATION
+}
+
 static InstructionProcess processors[] = {
     [IN_NONE] = noneProcess,
     [IN_NOP] = nopProcess,
@@ -315,6 +427,7 @@ static InstructionProcess processors[] = {
     [IN_XOR] = xorProcess,
     [IN_AND] = andProcess,
     [IN_CP] = cpProcess,
+    [IN_CB] = cbProcess,
 };
 
 

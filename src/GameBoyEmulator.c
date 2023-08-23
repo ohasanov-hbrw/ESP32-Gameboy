@@ -57,9 +57,6 @@ int runEmulator(int argc, char **argv){
             printf("CPU Stopped\n");
             return -3;
         }
-        else{
-            //delay(150);
-        }
 
         emulator.ticks++;
     }

@@ -54,7 +54,10 @@ void cpuSetFlags(cpuContext *, char , char , char , char );
 u16 readRegister(registerType);
 void setRegister(registerType, u16);
 
-cpuRegisters* getRegisters();
+u8 readRegister8(registerType);
+void setRegister8(registerType, u8);
 
+cpuRegisters* getRegisters();
+ 
 u8 readInterruptRegister();
 void setInterruptRegister(u8);
