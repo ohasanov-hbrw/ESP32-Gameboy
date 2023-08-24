@@ -48,13 +48,15 @@ static void ldProcess(cpuContext *CPU){
         waitForCPUCycle(1);
         return;
     }
+
     if(CPU->currentInstruction->mode == AM_HL_SPR){
         u8 hFlag = (readRegister(CPU->currentInstruction->reg2) & 0xF) + (CPU->fetchedData & 0xF) >= 0x10;
         u8 cFlag = (readRegister(CPU->currentInstruction->reg2) & 0xFF) + (CPU->fetchedData & 0xFF) >= 0x100;
         cpuSetFlags(&CPU, 0, 0, hFlag, cFlag);
-        setRegister(CPU->currentInstruction->reg1, readRegister(CPU->currentInstruction->reg2) + (char)CPU->fetchedData);
+        setRegister(CPU->currentInstruction->reg1, readRegister(CPU->currentInstruction->reg2) + (int8_t)CPU->fetchedData);
         return;
     }
+
     setRegister(CPU->currentInstruction->reg1, CPU->fetchedData);
 }
 
@@ -104,7 +106,7 @@ static void jpProcess(cpuContext *CPU){
 }
 
 static void jrProcess(cpuContext *CPU){
-    int8_t relative = (char)(CPU->fetchedData & 0xFF);
+    int8_t relative = (int8_t)(CPU->fetchedData & 0xFF);
     u16 address = CPU->registers.pc + relative;
     goToAddress(CPU, address, false);
 }
@@ -158,7 +160,7 @@ static void pushProcess(cpuContext *CPU){
     u16 high = (readRegister(CPU->currentInstruction->reg1) >> 8) & 0xFF;
     waitForCPUCycle(1);
     pushToStack(high);
-    u16 low = (readRegister(CPU->currentInstruction->reg1)) & 0xFF;
+    u16 low = readRegister(CPU->currentInstruction->reg1) & 0xFF;
     waitForCPUCycle(1);
     pushToStack(low);
     waitForCPUCycle(1);
@@ -234,13 +236,14 @@ static void addProcess(cpuContext *CPU){
     if(is16){
         waitForCPUCycle(1);
     }
+
     if(CPU->currentInstruction->reg1 == RT_SP){
-        value = readRegister(CPU->currentInstruction->reg1) + (char)CPU->fetchedData; 
+        value = readRegister(CPU->currentInstruction->reg1) + (int8_t)CPU->fetchedData; 
     }
 
     int z = (value & 0xFF) == 0;
-    int h = ((readRegister(CPU->currentInstruction->reg1) & 0xF) + (CPU->fetchedData & 0xF)) >= 0x10;
-    int c = ((int)(readRegister(CPU->currentInstruction->reg1) & 0xFF) + (int)(CPU->fetchedData & 0xFF)) >= 0x100;
+    int h = (readRegister(CPU->currentInstruction->reg1) & 0xF) + (CPU->fetchedData & 0xF) >= 0x10;
+    int c = (int)(readRegister(CPU->currentInstruction->reg1) & 0xFF) + (int)(CPU->fetchedData & 0xFF) >= 0x100;
 
     if(is16){
         z = -1;
@@ -485,17 +488,16 @@ static InstructionProcess processors[] = {
     [IN_JR] = jrProcess,
     [IN_CALL] = callProcess,
     [IN_RET] = retProcess,
-    [IN_RETI] = retiProcess,
     [IN_RST] = rstProcess,
-    [IN_INC] = incProcess,
     [IN_DEC] = decProcess,
+    [IN_INC] = incProcess,
     [IN_ADD] = addProcess,
     [IN_ADC] = adcProcess,
-    [IN_SBC] = sbcProcess,
     [IN_SUB] = subProcess,
-    [IN_OR] = orProcess,
-    [IN_XOR] = xorProcess,
+    [IN_SBC] = sbcProcess,
     [IN_AND] = andProcess,
+    [IN_XOR] = xorProcess,
+    [IN_OR] = orProcess,
     [IN_CP] = cpProcess,
     [IN_CB] = cbProcess,
     [IN_RRCA] = rrcaProcess,
@@ -503,12 +505,13 @@ static InstructionProcess processors[] = {
     [IN_RRA] = rraProcess,
     [IN_RLA] = rlaProcess,
     [IN_STOP] = stopProcess,
+    [IN_HALT] = haltProcess,
     [IN_DAA] = daaProcess,
     [IN_CPL] = cplProcess,
     [IN_SCF] = scfProcess,
     [IN_CCF] = ccfProcess,
-    [IN_HALT] = haltProcess,
-    [IN_EI] = eiProcess
+    [IN_EI] = eiProcess,
+    [IN_RETI] = retiProcess
 };
 
 

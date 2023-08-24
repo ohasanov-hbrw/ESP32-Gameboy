@@ -5,6 +5,10 @@
 #include <DebugFuncs.h>
 #include <GBRam.h>
 
+
+int amogus = 0;
+int lastamogus = 0;
+
 cpuContext CPU = {0};
 
 void initCpu(){
@@ -47,7 +51,7 @@ bool stepCpu(){
         waitForCPUCycle(1);
         fetchData();
 
-        /*char flags[16];
+        char flags[16];
         sprintf(flags, "%c%c%c%c", 
             CPU.registers.f & (1 << 7) ? 'Z' : '-',
             CPU.registers.f & (1 << 6) ? 'N' : '-',
@@ -63,17 +67,27 @@ bool stepCpu(){
             pc, inst, CPU.currentOpcode,
             readBus(pc + 1), readBus(pc + 2), CPU.registers.a, flags, CPU.registers.b, CPU.registers.c,
             CPU.registers.d, CPU.registers.e, CPU.registers.h, CPU.registers.l);
-        */
+        
         if (CPU.currentInstruction == NULL) {
             printf("Unknown Instruction! %02X\n", CPU.currentOpcode);
             exit(-7);
         }
-
+        /*if(readBus(0xFF02) == 0x81){
+            amogus++;
+        }
+        if(amogus > 1){
+            CPU.halted = true;
+        }*/
         updateDebug();
         printDebug();
-
+        /*if(lastamogus != amogus){
+            
+            lastamogus = amogus;
+        }*/
+        
        // printf("INFO: EXEC INST PC: 0x%04X NAME:%8s (0x%02X 0x%02X 0x%02X) A: 0x%02X BC: 0x%02X 0x%02X DE: 0x%02X 0x%02X HL: 0x%02X 0x%02X\n", pc, instructionName(CPU.currentInstruction->type), CPU.currentOpcode, readBus(pc + 1), readBus(pc + 2), CPU.registers.a, CPU.registers.b, CPU.registers.c, CPU.registers.d, CPU.registers.e, CPU.registers.h, CPU.registers.l);
         execute();
+        
     }
     else{
         waitForCPUCycle(1);

@@ -37,8 +37,7 @@ u8 readBus(u16 address){
         return 0;
     }
     else if(address < 0xFEA0){
-        printf("\tERR: READ BUS8 OAM: 0x%04X\n", address);
-        return 0;
+        return 0x0;
     }
     else if(address < 0xFF00){
         return 0;

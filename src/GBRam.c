@@ -1,6 +1,5 @@
 #include <GBRam.h>
 
-
 typedef struct{
     u8 wram[0x2000];
     u8 hram[0x80];
@@ -15,10 +14,6 @@ void cleanRam(){
 
 u8 readFromWram(u16 address) {
     address -= 0xC000;
-    if(address >= 0x2000){
-        printf("\tERR: INV WRAM ADDR %08X\n", address + 0xC000);
-        exit(-1);
-    }
     return RAM.wram[address];
 }
 
