@@ -23,8 +23,9 @@ u8 readBus(u16 address){
         return readFromCartridge(address);
     }
     else if(address < 0xA000){
-        printf("\tERR: READ BUS8: 0x%04X\n", address);
-        NO_IMPLEMENTATION
+        printf("\tERR: READ BUS8 CHR BG: 0x%04X\n", address);
+        return 0;
+        //NO_IMPLEMENTATION
     }
     else if(address < 0xC000){
         return readFromCartridge(address);
@@ -36,15 +37,17 @@ u8 readBus(u16 address){
         return 0;
     }
     else if(address < 0xFEA0){
-        printf("\tERR: READ BUS8: 0x%04X\n", address);
-        NO_IMPLEMENTATION
+        printf("\tERR: READ BUS8 OAM: 0x%04X\n", address);
+        return 0;
+        //NO_IMPLEMENTATION
     }
     else if(address < 0xFF00){
         return 0;
     }
     else if(address < 0xFF80){
-        printf("\tERR: READ BUS8: 0x%04X\n", address);
-        NO_IMPLEMENTATION
+        printf("\tERR: READ BUS8 IO: 0x%04X\n", address);
+        return 0;
+        //NO_IMPLEMENTATION
     }
     else if(address == 0xFFFF){
         return readInterruptRegister();
@@ -61,7 +64,8 @@ void writeBus(u16 address, u8 value){
     }
     else if(address < 0xA000){
         printf("\tERR: WRT BUS8: 0x%04X 0x%02X\n", address, value);
-        NO_IMPLEMENTATION
+        return;
+        //NO_IMPLEMENTATION
     }
     else if(address < 0xC000){
         writeToCartridge(address, value);
@@ -76,7 +80,8 @@ void writeBus(u16 address, u8 value){
     }
     else if(address < 0xFEA0){
         printf("\tERR: WRT BUS8: 0x%04X 0x%02X\n", address, value);
-        NO_IMPLEMENTATION
+        return;
+        //NO_IMPLEMENTATION
     }
     else if(address < 0xFF00){
         return;

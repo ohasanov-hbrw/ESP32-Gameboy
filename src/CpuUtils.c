@@ -99,3 +99,11 @@ void setRegister8(registerType rt, u8 value){
 cpuRegisters* getRegisters(){
     return &CPU.registers;
 }
+
+u8 readInterruptFlags(){
+    return CPU.interruptFlags;
+}
+
+void setInterruptFlags(u8 value){
+    CPU.interruptFlags = value;
+}

@@ -6,6 +6,7 @@ typedef struct{
     bool paused;
     bool running;
     u64 ticks;
+    bool killEmu;
 }EmulatorContext;
 
 int runEmulator(int argc, char **argv);

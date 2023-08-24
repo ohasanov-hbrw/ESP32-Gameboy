@@ -1,6 +1,7 @@
 #include <Cpu.h>
 #include <Bus.h>
 #include <GameBoyEmulator.h>
+#include <Interrupts.h>
 
 cpuContext CPU = {0};
 
@@ -41,10 +42,22 @@ bool stepCpu(){
         fetchData();
         printf("INFO: EXEC INST PC: 0x%04X NAME:%8s (0x%02X 0x%02X 0x%02X) A: 0x%02X BC: 0x%02X 0x%02X DE: 0x%02X 0x%02X HL: 0x%02X 0x%02X\n", pc, instructionName(CPU.currentInstruction->type), CPU.currentOpcode, readBus(pc + 1), readBus(pc + 2), CPU.registers.a, CPU.registers.b, CPU.registers.c, CPU.registers.d, CPU.registers.e, CPU.registers.h, CPU.registers.l);
         execute();
-        if(pc > 0x4000)
-            exit(0);
+    }
+    else{
+        waitForCPUCycle(1);
+        if(CPU.interruptFlags){
+            CPU.halted = false;
+        }
     }
     
+    if(CPU.interruptsEnabled){
+        handleInterrupts(&CPU);
+        CPU.enablingInterrupts = false;
+    }
+    if(CPU.enablingInterrupts){
+        CPU.interruptsEnabled = true;
+    }
+
     return true;
 }
 

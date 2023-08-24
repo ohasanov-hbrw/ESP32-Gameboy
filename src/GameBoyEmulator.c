@@ -3,7 +3,9 @@
 #include <GameCartridge.h>
 #include <Cpu.h>
 #include <SDL2/SDL.h>
-
+#include <Ui.h>
+#include <pthread.h>
+#include <unistd.h>
 /* 
   Emulator components:
 
@@ -21,28 +23,8 @@ EmulatorContext *GetEmulatorContext(){
     return &emulator;
 }
 
-void delay(u32 ms){
-    SDL_Delay(ms);
-}
-
-int runEmulator(int argc, char **argv){
-    if(argc < 2){
-        printf("Usage: emu <rom_file>\n");
-        return -1;
-    }
-
-    if(!loadCartridge(argv[1])){
-        printf("Failed to load ROM file: %s\n", argv[1]);
-        return -2;
-    }
-
-    printf("INFO: Cart loaded..\n");
-
-    SDL_Init(SDL_INIT_VIDEO);
-    printf("INFO: SDL INIT\n");
-
+void *runCpu(void * p){
     initCpu();
-    
     emulator.running = true;
     emulator.paused = false;
     emulator.ticks = 0;
@@ -60,7 +42,38 @@ int runEmulator(int argc, char **argv){
 
         emulator.ticks++;
     }
+    return 0;
+}
 
+int runEmulator(int argc, char **argv){
+    if(argc < 2){
+        printf("Usage: emu <rom_file>\n");
+        return -1;
+    }
+
+    if(!loadCartridge(argv[1])){
+        printf("Failed to load ROM file: %s\n", argv[1]);
+        return -2;
+    }
+
+    printf("INFO: Cart loaded..\n");
+
+    //SDL_Init(SDL_INIT_VIDEO);
+    //printf("INFO: SDL INIT\n");
+
+    initUi();
+    
+    pthread_t thread1;
+
+    if(pthread_create(&thread1, NULL, runCpu, NULL)){
+        printf("\tERR: FAILED TO START THREAD\n");
+        return -1;
+    }
+    
+    while(!emulator.killEmu){
+        usleep(1000);
+        handleEventsUi();
+    }
     return 0;
 }
 

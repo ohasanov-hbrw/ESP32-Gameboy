@@ -25,6 +25,7 @@ typedef struct{
     bool destinationIsMemory;
 
     bool interruptsEnabled;
+    bool enablingInterrupts;
 
     u8 currentOpcode;
 
@@ -34,7 +35,7 @@ typedef struct{
     bool steppingMode;
 
     u8 interruptRegister;
-
+    u8 interruptFlags;
 }cpuContext;
 
 void initCpu();
@@ -61,3 +62,7 @@ cpuRegisters* getRegisters();
  
 u8 readInterruptRegister();
 void setInterruptRegister(u8);
+
+
+u8 readInterruptFlags();
+void setInterruptFlags(u8);

@@ -121,6 +121,10 @@ static void diProcess(cpuContext *CPU){
     CPU->interruptsEnabled = false;
 }
 
+static void eiProcess(cpuContext *CPU){
+    CPU->enablingInterrupts = true;
+}
+
 void cpuSetFlags(cpuContext *CPU, char z, char n, char h, char c){
     if(z != -1){
         BIT_SET(CPU->registers.f, 7, z);
@@ -403,6 +407,77 @@ static void cbProcess(cpuContext *CPU){
     NO_IMPLEMENTATION
 }
 
+static void rlcaProcess(cpuContext *CPU){
+    u8 value = CPU->registers.a;
+    bool c = (value >> 7) & 1;
+    value = (value << 1) | c;
+    CPU->registers.a = value;
+    cpuSetFlags(CPU, 0, 0, 0, c);
+}
+
+static void rrcaProcess(cpuContext *CPU){
+    u8 value = CPU->registers.a & 1;
+    CPU->registers.a >>= 1;
+    CPU->registers.a |= (value << 7);
+    cpuSetFlags(CPU, 0, 0, 0, value);
+}
+
+static void rlaProcess(cpuContext *CPU){
+    u8 value = CPU->registers.a;
+    u8 cFlag = CPU_FLAG_C;
+    u8 c = (value >> 7) & 1;
+    CPU->registers.a = (value << 1) | cFlag;
+    cpuSetFlags(CPU, 0, 0, 0, c);
+}
+
+static void rraProcess(cpuContext *CPU){
+    u8 carryFlag = CPU_FLAG_C;
+    u8 newCarryFlag = CPU->registers.a & 1;
+    CPU->registers.a >>= 1;
+    CPU->registers.a |= (carryFlag << 7);
+    cpuSetFlags(CPU, 0, 0, 0, newCarryFlag);
+}
+
+static void stopProcess(cpuContext *CPU){
+    printf("\tERR: CPU STOP\n");
+    NO_IMPLEMENTATION
+}
+
+static void daaProcess(cpuContext *CPU){
+    u8 value = 0;
+    int cFlag = 0;
+
+    if (CPU_FLAG_H || (!CPU_FLAG_N && (CPU->registers.a & 0xF) > 9)) {
+        value = 6;
+    }
+
+    if (CPU_FLAG_C || (!CPU_FLAG_N && CPU->registers.a > 0x99)) {
+        value |= 0x60;
+        cFlag = 1;
+    }
+
+    CPU->registers.a += CPU_FLAG_N ? -value : value;
+
+    cpuSetFlags(CPU, CPU->registers.a == 0, -1, 0, cFlag);
+}
+
+static void cplProcess(cpuContext *CPU){
+    CPU->registers.a = ~CPU->registers.a;
+    cpuSetFlags(CPU, -1, 1, 1, -1);
+}
+
+static void scfProcess(cpuContext *CPU){
+    cpuSetFlags(CPU, -1, 0, 0, 1);
+}
+
+static void ccfProcess(cpuContext *CPU){
+    cpuSetFlags(CPU, -1, 0, 0, CPU_FLAG_C ^ 1);
+}
+
+static void haltProcess(cpuContext *CPU){
+    CPU->halted = true;
+}
+
 static InstructionProcess processors[] = {
     [IN_NONE] = noneProcess,
     [IN_NOP] = nopProcess,
@@ -428,6 +503,17 @@ static InstructionProcess processors[] = {
     [IN_AND] = andProcess,
     [IN_CP] = cpProcess,
     [IN_CB] = cbProcess,
+    [IN_RRCA] = rrcaProcess,
+    [IN_RLCA] = rlcaProcess,
+    [IN_RRA] = rraProcess,
+    [IN_RLA] = rlaProcess,
+    [IN_STOP] = stopProcess,
+    [IN_DAA] = daaProcess,
+    [IN_CPL] = cplProcess,
+    [IN_SCF] = scfProcess,
+    [IN_CCF] = ccfProcess,
+    [IN_HALT] = haltProcess,
+    [IN_EI] = eiProcess
 };
 
 

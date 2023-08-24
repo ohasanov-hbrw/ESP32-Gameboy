@@ -1,7 +1,7 @@
 CC = gcc 
 cflags = -O2
 cflags += -Iinclude -I/usr/x86_64-w64-mingw32/include/SDL2 -D_REENTRANT
-ldflags += -lstdc++ -lpthread -ldl -lSDL2main -lSDL2 -lpthread -I/usr/include/SDL2
+ldflags += -lstdc++ -lpthread -ldl -lSDL2main -lSDL2 -lSDL2_ttf -lpthread -I/usr/include/SDL2
 name = GBEmuEsp32 
 
 sources = $(wildcard src/*.c)
