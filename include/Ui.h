@@ -8,4 +8,5 @@ static const int SCREEN_HEIGHT = 288;
 
 void initUi();
 void delay(u32);
+void CreateText(const char*);
 void handleEventsUi();

@@ -297,12 +297,12 @@ static void andProcess(cpuContext *CPU){
 }
 
 static void orProcess(cpuContext *CPU){
-    CPU->registers.a |= CPU->fetchedData && 0xFF;
+    CPU->registers.a |= CPU->fetchedData & 0xFF;
     cpuSetFlags(CPU, CPU->registers.a == 0, 0, 0, 0);
 }
 
 static void xorProcess(cpuContext *CPU){
-    CPU->registers.a ^= CPU->fetchedData && 0xFF;
+    CPU->registers.a ^= CPU->fetchedData & 0xFF;
     cpuSetFlags(CPU, CPU->registers.a == 0, 0, 0, 0);
 }
 

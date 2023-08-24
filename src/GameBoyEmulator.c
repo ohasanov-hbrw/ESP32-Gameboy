@@ -71,7 +71,7 @@ int runEmulator(int argc, char **argv){
     }
     
     while(!emulator.killEmu){
-        usleep(1000);
+        delay(10);
         handleEventsUi();
     }
     return 0;

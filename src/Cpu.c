@@ -1,4 +1,5 @@
 #include <Cpu.h>
+#include <Ui.h>
 #include <Bus.h>
 #include <GameBoyEmulator.h>
 #include <Interrupts.h>
@@ -61,21 +62,23 @@ bool stepCpu(){
 
         char inst[16];
         instructionToString(&CPU, inst);
-
         printf("INFO: %08lX - %04X: %-12s (%02X %02X %02X) A: %02X F: %s BC: %02X%02X DE: %02X%02X HL: %02X%02X\n", 
             GetEmulatorContext()->ticks,
             pc, inst, CPU.currentOpcode,
             readBus(pc + 1), readBus(pc + 2), CPU.registers.a, flags, CPU.registers.b, CPU.registers.c,
             CPU.registers.d, CPU.registers.e, CPU.registers.h, CPU.registers.l);
-        
         if (CPU.currentInstruction == NULL) {
             printf("Unknown Instruction! %02X\n", CPU.currentOpcode);
             exit(-7);
         }
+        /*if(CPU.registers.h == 0x90 && CPU.registers.l == 0x00){
+            amogus++;
+            //CPU.halted = true;
+        }*/
         /*if(readBus(0xFF02) == 0x81){
             amogus++;
-        }
-        if(amogus > 1){
+        }*/
+        /*if(amogus > 1){
             CPU.halted = true;
         }*/
         updateDebug();
