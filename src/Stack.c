@@ -13,9 +13,7 @@ void push16ToStack(u16 value){
 }
 
 u8 popFromStack(){
-    u8 data = readBus(getRegisters()->sp);
-    getRegisters()->sp++;
-    return data;
+    return readBus(getRegisters()->sp++);
 }
 
 u16 pop16FromStack(){

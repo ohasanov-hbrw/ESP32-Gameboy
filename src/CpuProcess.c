@@ -39,13 +39,13 @@ static void nopProcess(cpuContext *CPU){
 static void ldProcess(cpuContext *CPU){
     if(CPU->destinationIsMemory){
         if(is16Bit(CPU->currentInstruction->reg2)){
-            writeBus16(CPU->memoryDestination, CPU->fetchedData);
             waitForCPUCycle(1);
+            writeBus16(CPU->memoryDestination, CPU->fetchedData);
         }
         else{
             writeBus(CPU->memoryDestination, CPU->fetchedData);
-            waitForCPUCycle(1);
         }
+        waitForCPUCycle(1);
         return;
     }
     if(CPU->currentInstruction->mode == AM_HL_SPR){
@@ -63,7 +63,7 @@ static void ldhProcess(cpuContext *CPU){
         setRegister(CPU->currentInstruction->reg1, readBus(0xFF00 | CPU->fetchedData));
     }
     else{
-        writeBus(0xFF00 | CPU->fetchedData, CPU->registers.a);
+        writeBus(CPU->memoryDestination, CPU->registers.a);
     }
     waitForCPUCycle(1);
 }
@@ -104,7 +104,7 @@ static void jpProcess(cpuContext *CPU){
 }
 
 static void jrProcess(cpuContext *CPU){
-    char relative = (char)(CPU->fetchedData & 0xFF);
+    int8_t relative = (char)(CPU->fetchedData & 0xFF);
     u16 address = CPU->registers.pc + relative;
     goToAddress(CPU, address, false);
 }
@@ -204,9 +204,7 @@ static void incProcess(cpuContext *CPU){
     if((CPU->currentOpcode & 0x03) == 0x03){
         return;
     }
-    else{
-        cpuSetFlags(CPU, value == 0, 0, (value & 0x0F) == 0, -1);
-    }
+    cpuSetFlags(CPU, value == 0, 0, (value & 0x0F) == 0, -1);
 }
 
 static void decProcess(cpuContext *CPU){
@@ -216,7 +214,6 @@ static void decProcess(cpuContext *CPU){
     }
     if(CPU->currentInstruction->reg1 == RT_HL && CPU->currentInstruction->mode == AM_MR){
         value = readBus(readRegister(RT_HL)) - 1;
-        value &= 0xFF;
         writeBus(readRegister(RT_HL), value);
     }
     else{
@@ -227,9 +224,7 @@ static void decProcess(cpuContext *CPU){
     if((CPU->currentOpcode & 0x03) == 0x03){
         return;
     }
-    else{
-        cpuSetFlags(CPU, value == 0, 1, (value & 0x0F) == 0x0F, -1);
-    }
+    cpuSetFlags(CPU, value == 0, 1, (value & 0x0F) == 0x0F, -1);
 }
 
 static void addProcess(cpuContext *CPU){
@@ -387,7 +382,7 @@ static void cbProcess(cpuContext *CPU){
         case 5:{
             u8 oldValue = (int8_t)registerValue >> 1;
             setRegister8(reg, oldValue);
-            cpuSetFlags(CPU, !oldValue, false, false, registerValue & 1);
+            cpuSetFlags(CPU, !oldValue, 0, 0, registerValue & 1);
             return;
         }
         case 6:{
@@ -399,7 +394,7 @@ static void cbProcess(cpuContext *CPU){
         case 7:{
             u8 oldValue = registerValue >> 1;
             setRegister8(reg, oldValue);
-            cpuSetFlags(CPU, !oldValue, false, false, registerValue & 1);
+            cpuSetFlags(CPU, !oldValue, 0, 0, registerValue & 1);
             return;
         }
     }

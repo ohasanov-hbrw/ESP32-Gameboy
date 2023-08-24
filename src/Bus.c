@@ -1,6 +1,7 @@
 #include <Bus.h>
 #include <GameCartridge.h>
 #include <GBRam.h>
+#include <Io.h>
 
 // 0x0000 - 0x3FFF : ROM Bank 0
 // 0x4000 - 0x7FFF : ROM Bank 1 - Switchable
@@ -25,7 +26,6 @@ u8 readBus(u16 address){
     else if(address < 0xA000){
         printf("\tERR: READ BUS8 CHR BG: 0x%04X\n", address);
         return 0;
-        //NO_IMPLEMENTATION
     }
     else if(address < 0xC000){
         return readFromCartridge(address);
@@ -39,22 +39,17 @@ u8 readBus(u16 address){
     else if(address < 0xFEA0){
         printf("\tERR: READ BUS8 OAM: 0x%04X\n", address);
         return 0;
-        //NO_IMPLEMENTATION
     }
     else if(address < 0xFF00){
         return 0;
     }
     else if(address < 0xFF80){
-        printf("\tERR: READ BUS8 IO: 0x%04X\n", address);
-        return 0;
-        //NO_IMPLEMENTATION
+        return readIo(address);
     }
     else if(address == 0xFFFF){
         return readInterruptRegister();
     }
-    else{
-        readFromHram(address);
-    }
+    return readFromHram(address);
 }
 
 void writeBus(u16 address, u8 value){
@@ -65,7 +60,6 @@ void writeBus(u16 address, u8 value){
     else if(address < 0xA000){
         printf("\tERR: WRT BUS8: 0x%04X 0x%02X\n", address, value);
         return;
-        //NO_IMPLEMENTATION
     }
     else if(address < 0xC000){
         writeToCartridge(address, value);
@@ -81,23 +75,19 @@ void writeBus(u16 address, u8 value){
     else if(address < 0xFEA0){
         printf("\tERR: WRT BUS8: 0x%04X 0x%02X\n", address, value);
         return;
-        //NO_IMPLEMENTATION
     }
     else if(address < 0xFF00){
         return;
     }
     else if(address < 0xFF80){
-        printf("\tERR: WRT BUS8: 0x%04X 0x%02X\n", address, value);
+        writeIo(address, value);
         return;
-        //NO_IMPLEMENTATION
     }
     else if(address == 0xFFFF){
         setInterruptRegister(value);
+        return;
     }
-    else{
-        writeToHram(address, value);
-    }
-    
+    writeToHram(address, value);
 }
 
 void writeBus16(u16 address, u16 value){

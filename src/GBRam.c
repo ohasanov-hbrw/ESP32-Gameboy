@@ -8,6 +8,11 @@ typedef struct{
 
 static ramContext RAM;
 
+void cleanRam(){
+    memset(RAM.wram, 0, sizeof RAM.wram);
+    memset(RAM.hram, 0, sizeof RAM.hram);
+}
+
 u8 readFromWram(u16 address) {
     address -= 0xC000;
     if(address >= 0x2000){

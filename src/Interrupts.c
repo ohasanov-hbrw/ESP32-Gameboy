@@ -7,10 +7,6 @@ void handle(cpuContext * CPU, u16 address){
     CPU->registers.pc = address;
 }
 
-void requestInterrupt(interruptType t){
-
-}
-
 bool interruptCheck(cpuContext * CPU, u16 address, interruptType t){
     if(CPU->interruptFlags & t && CPU->interruptRegister & t){
         handle(CPU, address);

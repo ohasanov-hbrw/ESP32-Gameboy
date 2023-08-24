@@ -2,6 +2,7 @@
 
 #include <Utils.h>
 #include <Instructions.h>
+#include <DebugFuncs.h>
 
 typedef struct{
     u8 a;
@@ -41,6 +42,8 @@ typedef struct{
 void initCpu();
 bool stepCpu();
 
+void fetchData();
+
 typedef void (*InstructionProcess) (cpuContext *);
 
 InstructionProcess instructionGetProcessor(instructionType type);
@@ -63,6 +66,7 @@ cpuRegisters* getRegisters();
 u8 readInterruptRegister();
 void setInterruptRegister(u8);
 
-
 u8 readInterruptFlags();
 void setInterruptFlags(u8);
+
+void instructionToString(cpuContext *, char *);
