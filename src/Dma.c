@@ -2,6 +2,14 @@
 #include <Bus.h>
 #include <Ppu.h>
 
+typedef struct{
+    bool active;
+    u8 byte; //
+    u8 value;
+    u8 delay;
+}dmaContext;
+
+
 static dmaContext DMA = {0};
 
 void startDma(u8 start){
@@ -10,6 +18,7 @@ void startDma(u8 start){
     DMA.delay = 2;
     DMA.value = start;
 }
+
 void stepDma(){
     if(!DMA.active){
         return;
@@ -18,14 +27,10 @@ void stepDma(){
         DMA.delay--;
         return;
     }
-    writeOam(DMA.byte, readBus(DMA.value * 0x100) + DMA.byte);
+    writeOam(DMA.byte, readBus((DMA.value * 0x100) + DMA.byte));
     DMA.byte++;
     DMA.active = DMA.byte < 0xA0;
 }
 bool isTransferingDma(){
     return DMA.active;
-}
-
-dmaContext* getDmaContext(){
-    return &DMA;
 }

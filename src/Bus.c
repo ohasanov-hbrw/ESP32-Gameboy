@@ -38,6 +38,9 @@ u8 readBus(u16 address){
         return 0;
     }
     else if(address < 0xFEA0){
+        if(isTransferingDma()){
+            return 0xFF;
+        }
         return readOam(address);
     }
     else if(address < 0xFF00){
@@ -73,7 +76,7 @@ void writeBus(u16 address, u8 value){
         return;
     }
     else if(address < 0xFEA0){
-        if(getDmaContext()->active){
+        if(isTransferingDma()){
             return;
         }
         writeOam(address, value);
@@ -90,7 +93,9 @@ void writeBus(u16 address, u8 value){
         setInterruptRegister(value);
         return;
     }
-    writeToHram(address, value);
+    else{
+        writeToHram(address, value);
+    }
 }
 
 void writeBus16(u16 address, u16 value){

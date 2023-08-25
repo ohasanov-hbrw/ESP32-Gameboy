@@ -63,11 +63,11 @@ bool stepCpu(){
 
         char inst[16];
         instructionToString(&CPU, inst);
-        printf("INFO: %08lX - %04X: %-12s (%02X %02X %02X) A: %02X F: %s BC: %02X%02X DE: %02X%02X HL: %02X%02X\n", 
+        printf("INFO: %08lX - %04X: %-12s (%02X %02X %02X) A: %02X F: %s BC: %02X%02X DE: %02X%02X HL: %02X%02X DEST: %d\n", 
             GetEmulatorContext()->ticks,
             pc, inst, CPU.currentOpcode,
             readBus(pc + 1), readBus(pc + 2), CPU.registers.a, flags, CPU.registers.b, CPU.registers.c,
-            CPU.registers.d, CPU.registers.e, CPU.registers.h, CPU.registers.l);
+            CPU.registers.d, CPU.registers.e, CPU.registers.h, CPU.registers.l, CPU.destinationIsMemory);
         if (CPU.currentInstruction == NULL){
             printf("Unknown Instruction! %02X\n", CPU.currentOpcode);
             exit(-7);
@@ -79,9 +79,9 @@ bool stepCpu(){
         /*if(readBus(0xFF02) == 0x81){
             amogus++;
         }*/
-        if(amogus > 1){
-            CPU.halted = true;
-        }
+        /*if(GetEmulatorContext()->ticks > 0x0006386C){
+            exit(-3);
+        }*/
         updateDebug();
         printDebug();
         /*if(lastamogus != amogus){

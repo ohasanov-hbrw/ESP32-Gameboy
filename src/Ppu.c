@@ -12,7 +12,7 @@ void stepPpu(){
 
 void writeOam(u16 address, u8 value){
     if(address >= 0xFE00){
-        address -= 0xFF00;
+        address -= 0xFE00;
     }
     u8* p = (u8*)PPU.oamRam;
     p[address] = value;
@@ -20,7 +20,7 @@ void writeOam(u16 address, u8 value){
 }
 u8 readOam(u16 address){
     if(address >= 0xFE00){
-        address -= 0xFF00;
+        address -= 0xFE00;
     }
     u8* p = (u8*)PPU.oamRam;
     return p[address];
