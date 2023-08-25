@@ -2,6 +2,7 @@
 #include <Utils.h>
 #include <Timer.h>
 #include <Dma.h>
+#include <Lcd.h>
 static char serialData[2];
 
 
@@ -17,9 +18,9 @@ u8 readIo(u16 address){
     if(BETWEEN(address, 0xFF04, 0xFF07)){
         return readTimer(address);
     }
-    
-    if (address == 0xFF44) {
-        return ly++;
+
+    if(BETWEEN(address, 0xFF40, 0xFF4B)){
+        return readLcd(address);
     }
 
     if (address == 0xFF0F) {
@@ -45,8 +46,9 @@ void writeIo(u16 address, u8 value){
         return;
     }
 
-    if (address == 0xFF46) {
-        startDma(value);
+    if(BETWEEN(address, 0xFF40, 0xFF4B)){
+        writeLcd(address, value);
+        return;
     }
 
     if (address == 0xFF0F) {

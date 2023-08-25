@@ -22,4 +22,6 @@ typedef uint64_t u64;
 
 void delay(u32 ms);
 
+u32 getTicks();
+
 #define NO_IMPLEMENTATION {fprintf(stderr, "\tERR: CURRENTLY NOT IMPLEMENTED!\n"); exit(-69);}

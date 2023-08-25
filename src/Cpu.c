@@ -10,6 +10,9 @@
 int amogus = 0;
 int lastamogus = 0;
 
+
+#define DEBUG_CPU 0
+
 cpuContext CPU = {0};
 
 void initCpu(){
@@ -52,7 +55,7 @@ bool stepCpu(){
         fetchInstruction();
         waitForCPUCycle(1);
         fetchData();
-
+#if DEBUG_CPU == 1
         char flags[16];
         sprintf(flags, "%c%c%c%c", 
             CPU.registers.f & (1 << 7) ? 'Z' : '-',
@@ -60,7 +63,6 @@ bool stepCpu(){
             CPU.registers.f & (1 << 5) ? 'H' : '-',
             CPU.registers.f & (1 << 4) ? 'C' : '-'
         );
-
         char inst[16];
         instructionToString(&CPU, inst);
         printf("INFO: %08lX - %04X: %-12s (%02X %02X %02X) A: %02X F: %s BC: %02X%02X DE: %02X%02X HL: %02X%02X DEST: %d\n", 
@@ -72,25 +74,10 @@ bool stepCpu(){
             printf("Unknown Instruction! %02X\n", CPU.currentOpcode);
             exit(-7);
         }
-        /*if(CPU.registers.h == 0x90 && CPU.registers.l == 0x00){
-            amogus++;
-            //CPU.halted = true;
-        }*/
-        /*if(readBus(0xFF02) == 0x81){
-            amogus++;
-        }*/
-        /*if(GetEmulatorContext()->ticks > 0x0006386C){
-            exit(-3);
-        }*/
         updateDebug();
         printDebug();
-        /*if(lastamogus != amogus){
-            
-            lastamogus = amogus;
-        }*/
-        
-       // printf("INFO: EXEC INST PC: 0x%04X NAME:%8s (0x%02X 0x%02X 0x%02X) A: 0x%02X BC: 0x%02X 0x%02X DE: 0x%02X 0x%02X HL: 0x%02X 0x%02X\n", pc, instructionName(CPU.currentInstruction->type), CPU.currentOpcode, readBus(pc + 1), readBus(pc + 2), CPU.registers.a, CPU.registers.b, CPU.registers.c, CPU.registers.d, CPU.registers.e, CPU.registers.h, CPU.registers.l);
-        execute();
+#endif
+       execute();
         
     }
     else{

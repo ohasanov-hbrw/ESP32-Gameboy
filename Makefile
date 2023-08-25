@@ -18,7 +18,7 @@ files:
 
 run: $(name)
 #	bin/$(name) rom.gb
-	bin/$(name) cpu_instrs.gb
+	bin/$(name) tetris.gb
 
 $(name): $(objects)
 	$(CC) -o bin/$(name) $^ $(ldflags)

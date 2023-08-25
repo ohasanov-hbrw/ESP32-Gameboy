@@ -1,13 +1,49 @@
 #include <Ppu.h>
+#include <string.h>
+#include <PpuSm.h>
+#include <Lcd.h>
 
 static ppuContext PPU = {0};
 
-void initPpu(){
+ppuContext* getPpuContext(){
+    return &PPU;
+}
 
+void initPpu(){
+    PPU.currentFrame = 0;
+    PPU.lineTicks = 0;
+    PPU.vBuffer = malloc(YRES * XRES * sizeof(32));
+
+    PPU.pfc.lineX = 0;
+    PPU.pfc.pushedX = 0;
+    PPU.pfc.fetchedX = 0;
+    PPU.pfc.pixelFifo.size = 0;
+    PPU.pfc.pixelFifo.head = PPU.pfc.pixelFifo.tail = NULL;
+    PPU.pfc.currentFetchState = FS_TILE;
+    
+    initLcd();
+    LCDS_MODE_SET(MODE_OAM);
+
+    memset(PPU.oamRam, 0, sizeof(PPU.oamRam));
+    memset(PPU.vBuffer, 0, YRES * XRES * sizeof(u32));
 }
 
 void stepPpu(){
-
+    PPU.lineTicks++;
+    switch(LCDS_MODE){
+        case MODE_OAM:
+            oamMode();
+            break;
+        case MODE_XFER:
+            xferMode();
+            break;
+        case MODE_VBLANK:
+            vblankMode();
+            break;
+        case MODE_HBLANK:
+            hblankMode();
+            break;
+    }
 }
 
 void writeOam(u16 address, u8 value){
@@ -34,8 +70,3 @@ u8 readVram(u16 address){
     return PPU.vram[address - 0x8000];
 }
 
-
-
-ppuContext* getPpuContext(){
-    return &PPU;
-}

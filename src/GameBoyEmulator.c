@@ -2,6 +2,7 @@
 #include <GameBoyEmulator.h>
 #include <GameCartridge.h>
 #include <Cpu.h>
+#include <Ppu.h>
 #include <SDL2/SDL.h>
 #include <Ui.h>
 #include <pthread.h>
@@ -71,10 +72,14 @@ int runEmulator(int argc, char **argv){
         printf("\tERR: FAILED TO START THREAD\n");
         return -1;
     }
-    
+    u32 previousFrame = 0;
     while(!emulator.killEmu){
-        delay(10);
-        updateUi();
+        delay(1);
+        if(previousFrame != getPpuContext()->currentFrame){
+            updateUi();
+            previousFrame = getPpuContext()->currentFrame;
+        }
+        
         handleEventsUi();
     }
     return 0;
@@ -85,6 +90,7 @@ void waitForCPUCycle(int cycles){
         for(int n = 0; n < 4; n++){
             emulator.ticks++;
             stepTimer();
+            stepPpu();
         }
         stepDma();
     }
