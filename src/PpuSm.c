@@ -18,6 +18,49 @@ void incrementLy(){
     }
 }
 
+void loadLineSprites(){
+    int currentY = getLcdContext()->lY;
+    u8 spriteHeight = LCDC_OBJ_HEIGHT;
+    memset(getPpuContext()->lineEntryArray, 0, sizeof(getPpuContext()->lineEntryArray));
+
+    for(int i = 0; i < 40; i++){
+        oamEntry entry = getPpuContext()->oamRam[i];
+        if(!entry.x){
+            continue;
+        }
+        if(getPpuContext()->lineSpriteCount >= 10){
+            break;
+        }
+        if(entry.y <= currentY + 16 && entry.y + spriteHeight > currentY + 16){
+            oamLineEntry *lineEntry = &getPpuContext()->lineEntryArray[getPpuContext()->lineSpriteCount++];
+            lineEntry->entry = entry;
+            lineEntry->next = NULL;
+
+            if(!getPpuContext()->lineSprites || getPpuContext()->lineSprites->entry.x > entry.x){
+                lineEntry->next = getPpuContext()->lineSprites;
+                getPpuContext()->lineSprites = lineEntry;
+                continue;
+            }
+
+            oamLineEntry *line = getPpuContext()->lineSprites;
+            oamLineEntry *prev = line;
+            while(line){
+                if(line->entry.x > entry.x){
+                    prev->next = lineEntry;
+                    lineEntry->next = line;
+                    break;
+                }
+                if(!line->next){
+                    line->next = lineEntry;
+                    break;
+                }
+                prev = line;
+                line = line->next;
+            }
+        }
+    }
+}
+
 void oamMode(){
     if(getPpuContext()->lineTicks >= 80){
         LCDS_MODE_SET(MODE_XFER);
@@ -26,6 +69,13 @@ void oamMode(){
         getPpuContext()->pfc.fetchedX = 0;
         getPpuContext()->pfc.pushedX = 0;
         getPpuContext()->pfc.fifoX = 0;
+    }
+
+    if(getPpuContext()->lineTicks == 1){
+        getPpuContext()->lineSprites = 0;
+        getPpuContext()->lineSpriteCount = 0;
+
+        loadLineSprites();
     }
 }
 

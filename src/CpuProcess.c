@@ -437,7 +437,7 @@ static void rraProcess(cpuContext *CPU){
 
 static void stopProcess(cpuContext *CPU){
     printf("\tERR: CPU STOP\n");
-    NO_IMPLEMENTATION
+    //NO_IMPLEMENTATION
 }
 
 static void daaProcess(cpuContext *CPU){

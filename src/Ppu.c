@@ -21,6 +21,8 @@ void initPpu(){
     PPU.pfc.pixelFifo.head = PPU.pfc.pixelFifo.tail = NULL;
     PPU.pfc.currentFetchState = FS_TILE;
     
+    PPU.lineSprites = 0;
+    PPU.fetchedEntryCount = 0;
     initLcd();
     LCDS_MODE_SET(MODE_OAM);
 

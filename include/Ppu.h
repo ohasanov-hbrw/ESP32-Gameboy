@@ -34,7 +34,7 @@ typedef struct{
     u8 fetchedX;
     u8 bgwFetchData[3];
     u8 entryFetchData[6];
-    u8 mayY;
+    u8 mapY;
     u8 mapX;
     u8 tileY;
     u8 fifoX;
@@ -53,6 +53,12 @@ typedef struct{
     unsigned fbgp : 1;
 }oamEntry;
 
+typedef struct _oamLineEntry{
+    oamEntry entry;
+    struct _oamLineEntry *next;
+}oamLineEntry;
+
+
 typedef struct{
     oamEntry oamRam[40];
     u8 vram[0x2000];
@@ -60,6 +66,11 @@ typedef struct{
     u32 currentFrame;
     u32 lineTicks;
     u32* vBuffer;
+    u8 lineSpriteCount;
+    oamLineEntry *lineSprites;
+    oamLineEntry lineEntryArray[10];
+    u8 fetchedEntryCount;
+    oamEntry fetchedEntries[3];
 }ppuContext;
 
 
@@ -75,5 +86,4 @@ void writeVram(u16, u8);
 u8 readVram(u16);
 
 void processPipeline();
-
 void pipelineFifoReset();
