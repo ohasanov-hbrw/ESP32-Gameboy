@@ -52,8 +52,11 @@ static void ldProcess(cpuContext *CPU){
     if(CPU->currentInstruction->mode == AM_HL_SPR){
         u8 hFlag = (readRegister(CPU->currentInstruction->reg2) & 0xF) + (CPU->fetchedData & 0xF) >= 0x10;
         u8 cFlag = (readRegister(CPU->currentInstruction->reg2) & 0xFF) + (CPU->fetchedData & 0xFF) >= 0x100;
-        cpuSetFlags(&CPU, 0, 0, hFlag, cFlag);
-        setRegister(CPU->currentInstruction->reg1, readRegister(CPU->currentInstruction->reg2) + (int8_t)CPU->fetchedData);
+        cpuSetFlags(CPU, 0, 0, hFlag, cFlag);
+        registerType temp = CPU->currentInstruction->reg2;
+        u16 value = readRegister(temp);
+        value += (int8_t)CPU->fetchedData;
+        setRegister(CPU->currentInstruction->reg1, value);
         return;
     }
 
@@ -297,12 +300,12 @@ static void andProcess(cpuContext *CPU){
 }
 
 static void orProcess(cpuContext *CPU){
-    CPU->registers.a |= CPU->fetchedData & 0xFF;
+    CPU->registers.a |= (CPU->fetchedData & 0xFF);
     cpuSetFlags(CPU, CPU->registers.a == 0, 0, 0, 0);
 }
 
 static void xorProcess(cpuContext *CPU){
-    CPU->registers.a ^= CPU->fetchedData & 0xFF;
+    CPU->registers.a ^= (CPU->fetchedData & 0xFF);
     cpuSetFlags(CPU, CPU->registers.a == 0, 0, 0, 0);
 }
 

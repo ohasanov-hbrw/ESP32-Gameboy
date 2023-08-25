@@ -78,9 +78,9 @@ bool stepCpu(){
         /*if(readBus(0xFF02) == 0x81){
             amogus++;
         }*/
-        /*if(amogus > 1){
+        if(amogus > 1){
             CPU.halted = true;
-        }*/
+        }
         updateDebug();
         printDebug();
         /*if(lastamogus != amogus){
