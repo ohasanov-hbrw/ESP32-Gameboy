@@ -5,7 +5,7 @@
 static char serialData[2];
 
 
-u8 ly = 0;
+static u8 ly = 0;
 
 u8 readIo(u16 address){
     if(address == 0xFF01){
@@ -17,9 +17,11 @@ u8 readIo(u16 address){
     if(BETWEEN(address, 0xFF04, 0xFF07)){
         return readTimer(address);
     }
+    
     if (address == 0xFF44) {
         return ly++;
     }
+
     if (address == 0xFF0F) {
         return readInterruptFlags();
     }

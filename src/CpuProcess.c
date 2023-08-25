@@ -53,13 +53,9 @@ static void ldProcess(cpuContext *CPU){
         u8 hFlag = (readRegister(CPU->currentInstruction->reg2) & 0xF) + (CPU->fetchedData & 0xF) >= 0x10;
         u8 cFlag = (readRegister(CPU->currentInstruction->reg2) & 0xFF) + (CPU->fetchedData & 0xFF) >= 0x100;
         cpuSetFlags(CPU, 0, 0, hFlag, cFlag);
-        registerType temp = CPU->currentInstruction->reg2;
-        u16 value = readRegister(temp);
-        value += (int8_t)CPU->fetchedData;
-        setRegister(CPU->currentInstruction->reg1, value);
+        setRegister(CPU->currentInstruction->reg1, readRegister(CPU->currentInstruction->reg2) + (int8_t)CPU->fetchedData);
         return;
     }
-
     setRegister(CPU->currentInstruction->reg1, CPU->fetchedData);
 }
 
@@ -226,7 +222,7 @@ static void decProcess(cpuContext *CPU){
         value = readRegister(CPU->currentInstruction->reg1);
     }
 
-    if((CPU->currentOpcode & 0x03) == 0x03){
+    if((CPU->currentOpcode & 0x0B) == 0x0B){
         return;
     }
     cpuSetFlags(CPU, value == 0, 1, (value & 0x0F) == 0x0F, -1);
