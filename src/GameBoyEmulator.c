@@ -7,6 +7,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <Timer.h>
+#include <Dma.h>
 /* 
   Emulator components:
 
@@ -80,9 +81,11 @@ int runEmulator(int argc, char **argv){
 }
 
 void waitForCPUCycle(int cycles){
-    int n = (cycles * 4);
-    for(int i = 0; i < n; i++){
-        emulator.ticks++;
-        stepTimer();
+    for(int i = 0; i < cycles; i++){
+        for(int n = 0; n < 4; n++){
+            emulator.ticks++;
+            stepTimer();
+        }
+        stepDma();
     }
 }

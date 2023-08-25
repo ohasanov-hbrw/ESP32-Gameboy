@@ -3,6 +3,7 @@
 #include <GBRam.h>
 #include <Io.h>
 #include <Ppu.h>
+#include <Dma.h>
 
 // 0x0000 - 0x3FFF : ROM Bank 0
 // 0x4000 - 0x7FFF : ROM Bank 1 - Switchable
@@ -72,7 +73,10 @@ void writeBus(u16 address, u8 value){
         return;
     }
     else if(address < 0xFEA0){
-         writeOam(address, value);
+        if(getDmaContext()->active){
+            return;
+        }
+        writeOam(address, value);
         return;
     }
     else if(address < 0xFF00){
