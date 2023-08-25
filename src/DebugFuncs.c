@@ -14,7 +14,7 @@ void updateDebug(){
 }
 
 void printDebug(){
-    if (message[0]){
+    if (message[0] && lastMessageSize != messageSize){
         lastMessageSize = messageSize;
         printf("DEBUG: %s\n", message);
     }

@@ -1,5 +1,6 @@
 #include <Io.h>
 #include <Utils.h>
+#include <Timer.h>
 static char serialData[2];
 
 u8 readIo(u16 address){
@@ -9,6 +10,10 @@ u8 readIo(u16 address){
 
     if(address == 0xFF02){
         return serialData[1];
+    }
+
+    if(BETWEEN(address, 0xFF04, 0xFF07)){
+        return readTimer(address);
     }
 
     if (address == 0xFF0F) {
@@ -26,6 +31,11 @@ void writeIo(u16 address, u8 value){
 
     if(address == 0xFF02){
         serialData[1] = value;
+        return;
+    }
+
+    if(BETWEEN(address, 0xFF04, 0xFF07)){
+        writeTimer(address, value);
         return;
     }
 

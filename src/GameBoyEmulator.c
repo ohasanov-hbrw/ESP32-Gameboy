@@ -6,6 +6,7 @@
 #include <Ui.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <Timer.h>
 /* 
   Emulator components:
 
@@ -25,6 +26,8 @@ EmulatorContext *GetEmulatorContext(){
 
 void *runCpu(void * p){
     initCpu();
+    initTimer();
+    
     emulator.running = true;
     emulator.paused = false;
     emulator.ticks = 0;
@@ -39,8 +42,6 @@ void *runCpu(void * p){
             printf("CPU Stopped\n");
             return -3;
         }
-
-        emulator.ticks++;
     }
     return 0;
 }
@@ -78,5 +79,9 @@ int runEmulator(int argc, char **argv){
 }
 
 void waitForCPUCycle(int cycles){
-
+    int n = (cycles * 4);
+    for(int i = 0; i < n; i++){
+        emulator.ticks++;
+        stepTimer();
+    }
 }

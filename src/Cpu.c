@@ -5,7 +5,7 @@
 #include <Interrupts.h>
 #include <DebugFuncs.h>
 #include <GBRam.h>
-
+#include <Timer.h>
 
 int amogus = 0;
 int lastamogus = 0;
@@ -24,6 +24,7 @@ void initCpu(){
     CPU.interruptFlags = 0;
     CPU.interruptsEnabled = false;
     CPU.enablingInterrupts = false;
+    getTimerContext()->div = 0xABCC;
 }
 
 static void fetchInstruction(){
@@ -67,7 +68,7 @@ bool stepCpu(){
             pc, inst, CPU.currentOpcode,
             readBus(pc + 1), readBus(pc + 2), CPU.registers.a, flags, CPU.registers.b, CPU.registers.c,
             CPU.registers.d, CPU.registers.e, CPU.registers.h, CPU.registers.l);
-        if (CPU.currentInstruction == NULL) {
+        if (CPU.currentInstruction == NULL){
             printf("Unknown Instruction! %02X\n", CPU.currentOpcode);
             exit(-7);
         }
