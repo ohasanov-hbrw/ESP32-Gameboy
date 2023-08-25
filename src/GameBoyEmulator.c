@@ -73,6 +73,7 @@ int runEmulator(int argc, char **argv){
     
     while(!emulator.killEmu){
         delay(10);
+        updateUi();
         handleEventsUi();
     }
     return 0;

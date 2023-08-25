@@ -2,6 +2,7 @@
 #include <GameCartridge.h>
 #include <GBRam.h>
 #include <Io.h>
+#include <Ppu.h>
 
 // 0x0000 - 0x3FFF : ROM Bank 0
 // 0x4000 - 0x7FFF : ROM Bank 1 - Switchable
@@ -24,8 +25,7 @@ u8 readBus(u16 address){
         return readFromCartridge(address);
     }
     else if(address < 0xA000){
-        printf("\tERR: READ BUS8 CHR BG: 0x%04X\n", address);
-        return 0;
+        return readVram(address);
     }
     else if(address < 0xC000){
         return readFromCartridge(address);
@@ -37,7 +37,7 @@ u8 readBus(u16 address){
         return 0;
     }
     else if(address < 0xFEA0){
-        return 0x0;
+        return readOam(address);
     }
     else if(address < 0xFF00){
         return 0;
@@ -57,7 +57,7 @@ void writeBus(u16 address, u8 value){
         return;
     }
     else if(address < 0xA000){
-        printf("\tERR: WRT BUS8: 0x%04X 0x%02X\n", address, value);
+        writeVram(address, value);
         return;
     }
     else if(address < 0xC000){
@@ -72,7 +72,7 @@ void writeBus(u16 address, u8 value){
         return;
     }
     else if(address < 0xFEA0){
-        printf("\tERR: WRT BUS8: 0x%04X 0x%02X\n", address, value);
+         writeOam(address, value);
         return;
     }
     else if(address < 0xFF00){

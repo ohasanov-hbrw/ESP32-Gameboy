@@ -8,6 +8,11 @@ SDL_Renderer *sdlRenderer;
 SDL_Texture *sdlTexture;
 SDL_Surface *screen;
 
+SDL_Window *sdlDebugWindow;
+SDL_Renderer *sdlDebugRenderer;
+SDL_Texture *sdlDebugTexture;
+SDL_Surface *debugScreen;
+
 TTF_Font* CFont;
 
 SDL_Color TextColor = { 255, 0, 0, 255}; // Red SDL color.
@@ -17,6 +22,8 @@ SDL_Rect TextRect; // Text rectangle area with the position for the texture text
 
 SDL_Color White = {255, 255, 255};
 
+static int scale = 2;
+
 void initUi(){
     SDL_Init(SDL_INIT_VIDEO);
     printf("SDL INIT\n");
@@ -25,12 +32,96 @@ void initUi(){
 
     SDL_CreateWindowAndRenderer(SCREEN_WIDTH, SCREEN_HEIGHT, 0, &sdlWindow, &sdlRenderer);
 
+
+    SDL_CreateWindowAndRenderer(16 * 8 * scale, 32 * 8 * scale, 0, 
+        &sdlDebugWindow, &sdlDebugRenderer);
+
+    debugScreen = SDL_CreateRGBSurface(0, (16 * 8 * scale) + (16 * scale), 
+                                            (32 * 8 * scale) + (64 * scale), 32,
+                                            0x00FF0000,
+                                            0x0000FF00,
+                                            0x000000FF,
+                                            0xFF000000);
+
+    sdlDebugTexture = SDL_CreateTexture(sdlDebugRenderer,
+                                            SDL_PIXELFORMAT_ARGB8888,
+                                            SDL_TEXTUREACCESS_STREAMING,
+                                            (16 * 8 * scale) + (16 * scale), 
+                                            (32 * 8 * scale) + (64 * scale));
+
+    int x, y;
+    SDL_GetWindowPosition(sdlWindow, &x, &y);
+    SDL_SetWindowPosition(sdlDebugWindow, x + SCREEN_WIDTH + 10, y);
+
+
     CFont = TTF_OpenFont("font.ttf", 16);
 }
 
 void delay(u32 ms){
     SDL_Delay(ms);
 }
+
+
+
+
+
+static unsigned long tileColors[4] = {0xFFFFFFFF, 0xFFAAAAAA, 0xFF555555, 0xFF000000}; 
+
+void displayTile(SDL_Surface *surface, u16 startLocation, u16 tileNum, int x, int y){
+    SDL_Rect rc;
+    for(int tileY=0; tileY<16; tileY += 2){
+        u8 b1 = readBus(startLocation + (tileNum * 16) + tileY);
+        u8 b2 = readBus(startLocation + (tileNum * 16) + tileY + 1);
+        for(int bit = 7; bit >= 0; bit--){
+            u8 hi = !!(b1 & (1 << bit)) << 1;
+            u8 lo = !!(b2 & (1 << bit));
+            u8 color = hi | lo;
+            rc.x = x + ((7 - bit) * scale);
+            rc.y = y + (tileY / 2 * scale);
+            rc.w = scale;
+            rc.h = scale;
+            SDL_FillRect(surface, &rc, tileColors[color]);
+        }
+    }
+}
+
+void updateDebugWindow(){
+    int xDraw = 0;
+    int yDraw = 0;
+    int tileNum = 0;
+
+    SDL_Rect rc;
+    rc.x = 0;
+    rc.y = 0;
+    rc.w = debugScreen->w;
+    rc.h = debugScreen->h;
+    SDL_FillRect(debugScreen, &rc, 0xFF111111);
+
+    u16 addr = 0x8000;
+    for(int y = 0; y < 24; y++){
+        for(int x = 0; x < 16; x++){
+            displayTile(debugScreen, addr, tileNum, xDraw + (x * scale), yDraw + (y * scale));
+            xDraw += (8 * scale);
+            tileNum++;
+        }
+        yDraw += (8 * scale);
+        xDraw = 0;
+    }
+
+	SDL_UpdateTexture(sdlDebugTexture, NULL, debugScreen->pixels, debugScreen->pitch);
+	SDL_RenderClear(sdlDebugRenderer);
+	SDL_RenderCopy(sdlDebugRenderer, sdlDebugTexture, NULL, NULL);
+	SDL_RenderPresent(sdlDebugRenderer);
+}
+
+void updateUi(){
+    updateDebugWindow();
+}
+
+
+
+
+
 
 void CreateText(const char* Message) {
     TextSurface = TTF_RenderText_Solid(CFont, Message, TextColor);
