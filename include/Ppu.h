@@ -71,6 +71,9 @@ typedef struct{
     oamLineEntry lineEntryArray[10];
     u8 fetchedEntryCount;
     oamEntry fetchedEntries[3];
+    
+    u8 windowLine;
+
 }ppuContext;
 
 
@@ -87,3 +90,5 @@ u8 readVram(u16);
 
 void processPipeline();
 void pipelineFifoReset();
+
+bool windowVisible();

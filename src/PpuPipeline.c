@@ -1,6 +1,11 @@
 #include <Ppu.h>
 #include <Lcd.h>
 
+bool windowVisible(){
+    return LCDC_WIN_ENABLE && getLcdContext()->winX >= 0 && getLcdContext()->winX <= 166 && getLcdContext()->winY >= 0 && getLcdContext()->winY < YRES;
+}
+
+
 void pixelFifoPush(u32 value){
     fifoEntry *next = malloc(sizeof(fifoEntry));
     next->next = NULL;
@@ -121,6 +126,23 @@ void loadSpriteData(u8 offset){
     }
 }
 
+void loadWindowTile(){
+    if(!windowVisible()){
+        return;
+    }
+    u8 windowY = getLcdContext()->winY;
+    if(getPpuContext()->pfc.fetchedX + 7 >= getLcdContext()->winX && getPpuContext()->pfc.fetchedX + 7 < getLcdContext()->winX + YRES + 14){
+        if(getLcdContext()->lY >= windowY && getLcdContext()->lY < windowY + XRES){
+            u8 windowsTileY = getPpuContext()->windowLine / 8;
+            getPpuContext()->pfc.bgwFetchData[0] = readBus(LCDC_WIN_MAP_AREA + ((getPpuContext()->pfc.fetchedX + 7 - getLcdContext()->winX) / 8) + (windowsTileY * 32));
+
+            if (LCDC_BGW_DATA_AREA == 0x8800) {
+                getPpuContext()->pfc.bgwFetchData[0] += 128;
+            }
+        }
+    }
+}
+
 void pipelineFetch(){
     switch(getPpuContext()->pfc.currentFetchState){
         case FS_TILE:{
@@ -131,6 +153,7 @@ void pipelineFetch(){
                 if(LCDC_BGW_DATA_AREA == 0x8800){
                     getPpuContext()->pfc.bgwFetchData[0] += 128;
                 }
+                //loadWindowTile();
             }
 
             if(LCDC_OBJ_ENABLE && getPpuContext()->lineSprites){

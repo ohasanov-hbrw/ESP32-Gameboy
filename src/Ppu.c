@@ -23,6 +23,8 @@ void initPpu(){
     
     PPU.lineSprites = 0;
     PPU.fetchedEntryCount = 0;
+    PPU.windowLine = 0;
+
     initLcd();
     LCDS_MODE_SET(MODE_OAM);
 

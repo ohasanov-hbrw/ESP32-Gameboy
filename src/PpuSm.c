@@ -4,7 +4,11 @@
 #include <Cpu.h>
 #include <Interrupts.h>
 
-void incrementLy(){
+void incrementLy(){ 
+    if(windowVisible() && (getLcdContext()->lY >= getLcdContext()->winY) && (getLcdContext()->lY < getLcdContext()->winY + YRES)){
+        getPpuContext()->windowLine++;
+    }
+
     getLcdContext()->lY++;
 
     if(getLcdContext()->lY == getLcdContext()->lYCompare){
@@ -96,6 +100,7 @@ void vblankMode(){
         if (getLcdContext()->lY >= LINES_PER_FRAME){
             LCDS_MODE_SET(MODE_OAM);
             getLcdContext()->lY = 0;
+            getPpuContext()->windowLine = 0; 
         }
         getPpuContext()->lineTicks = 0;
     }
