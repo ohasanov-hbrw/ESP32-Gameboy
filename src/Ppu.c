@@ -14,6 +14,8 @@ void initPpu(){
     PPU.lineTicks = 0;
     PPU.vBuffer = malloc(YRES * XRES * sizeof(32));
 
+    PPU.tCycles = 0;
+
     PPU.pfc.lineX = 0;
     PPU.pfc.pushedX = 0;
     PPU.pfc.fetchedX = 0;

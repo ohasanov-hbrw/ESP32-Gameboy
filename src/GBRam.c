@@ -1,4 +1,5 @@
 #include <GBRam.h>
+#include <string.h>
 
 typedef struct{
     u8 wram[0x2000];

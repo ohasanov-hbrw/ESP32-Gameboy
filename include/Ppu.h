@@ -45,12 +45,19 @@ typedef struct{
     u8 y;
     u8 x;
     u8 tile;
-    unsigned fcgbpn : 3;
-    unsigned fcgbv : 1;
-    unsigned fpn : 1;
-    unsigned fxflip : 1;
-    unsigned fyflip : 1;
-    unsigned fbgp : 1;
+    u8 flags;
+    /*
+    Bit 7    OBJ-to-BG Priority
+            0 = Sprite is always rendered above background
+            1 = Background colors 1-3 overlay sprite, sprite is still rendered above color 0
+    Bit 6    Y-Flip
+            If set to 1 the sprite is flipped vertically, otherwise rendered as normal
+    Bit 5    X-Flip
+            If set to 1 the sprite is flipped horizontally, otherwise rendered as normal
+    Bit 4    Palette Number
+            If set to 0, the OBP0 register is used as the palette, otherwise OBP1
+    Bit 3-0  CGB-Only flags
+    */
 }oamEntry;
 
 typedef struct _oamLineEntry{
@@ -73,6 +80,8 @@ typedef struct{
     oamEntry fetchedEntries[3];
     
     u8 windowLine;
+
+    int tCycles;
 
 }ppuContext;
 

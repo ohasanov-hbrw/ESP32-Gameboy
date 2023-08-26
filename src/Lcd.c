@@ -19,8 +19,8 @@ void initLcd(){
     LCD.bgp = 0xFC;
     LCD.obp[0] = 0xFF;
     LCD.obp[1] = 0xFF;
-    LCD.winX = 0;
     LCD.winY = 0;
+    LCD.winX = 0;
     for(int i = 0; i < 4; i++){
         LCD.bgc[i] = defaultColors[i];
         LCD.spc1[i] = defaultColors[i];
@@ -67,5 +67,11 @@ void writeLcd(u16 address, u8 value){
     }
     else if(address == 0xFF49){
         updatePalette(value & 0b11111100, 2);
+    }
+    else if(address == 0xFF4B){
+        LCD.winX = value;
+    }
+    else if(address == 0xFF4A){
+        LCD.winY = value;
     }
 }

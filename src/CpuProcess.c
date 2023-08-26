@@ -29,7 +29,7 @@ static bool is16Bit(registerType rt){
 
 static void noneProcess(cpuContext *CPU){
     printf("\tERR: INV INST\n");
-    exit(-31);
+    //exit(-31);
 }
 
 static void nopProcess(cpuContext *CPU){
