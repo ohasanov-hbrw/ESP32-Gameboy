@@ -11,7 +11,7 @@ int amogus = 0;
 int lastamogus = 0;
 
 
-#define DEBUG_CPU 1
+#define DEBUG_CPU 0
 
 cpuContext CPU = {0};
 
@@ -67,21 +67,20 @@ bool stepCpu(){
         );
         char inst[16];
         instructionToString(&CPU, inst);
-        printf("INFO: %08lX - %04X: %-12s (%02X %02X %02X) A: %02X F: %s BC: %02X%02X DE: %02X%02X HL: %02X%02X DEST: %d\n", 
+        printf("INFO: %08lX - %04X: %-12s (%02X %02X %02X) A: %02X F: %s BC: %02X%02X DE: %02X%02X HL: %02X%02X DEST: %d FETCHED: 0x%02X\n", 
             GetEmulatorContext()->ticks,
             pc, inst, CPU.currentOpcode,
             readBus(pc + 1), readBus(pc + 2), CPU.registers.a, flags, CPU.registers.b, CPU.registers.c,
-            CPU.registers.d, CPU.registers.e, CPU.registers.h, CPU.registers.l, CPU.destinationIsMemory);
+            CPU.registers.d, CPU.registers.e, CPU.registers.h, CPU.registers.l, CPU.destinationIsMemory, CPU.fetchedData);
         if (CPU.currentInstruction == NULL){
             printf("Unknown Instruction! %02X\n", CPU.currentOpcode);
             exit(-7);
         }
+        
         updateDebug();
         printDebug();
 #endif
         execute();
-        
-        
     }
     else{
         waitForCPUCycle(1);

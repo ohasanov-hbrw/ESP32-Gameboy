@@ -30,7 +30,7 @@ void initPpu(){
     PPU.windowLine = 0;
     PPU.enableWindow = false;
     PPU.lastTileIndex = -1;
-    
+
     initLcd();
     LCDS_MODE_SET(MODE_OAM);
 
@@ -40,17 +40,22 @@ void initPpu(){
 
 void stepPpu(){
     PPU.tCycles++;
+    //printf("LCD LY = 0x%02X tCycles = %d", getLcdContext()->lY, PPU.tCycles);
     switch(LCDS_MODE){
         case MODE_OAM:
+            //printf(" MODE_OAM\n");
             oamMode();
             break;
         case MODE_XFER:
+            //printf(" MODE_XFER\n");
             xferMode();
             break;
         case MODE_VBLANK:
+            //printf(" MODE_VBLANK\n");
             vblankMode();
             break;
         case MODE_HBLANK:
+            //printf(" MODE_HBLANK\n");
             hblankMode();
             break;
     }

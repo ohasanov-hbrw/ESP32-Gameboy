@@ -106,6 +106,7 @@ static void jpProcess(cpuContext *CPU){
 
 static void jrProcess(cpuContext *CPU){
     int8_t relative = (int8_t)(CPU->fetchedData & 0xFF);
+    //printf("%d\n", relative);
     u16 address = CPU->registers.pc + relative;
     goToAddress(CPU, address, false);
 }

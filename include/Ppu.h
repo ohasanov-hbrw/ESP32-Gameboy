@@ -90,6 +90,8 @@ typedef struct{
     bool enableWindow;
 
     int lastTileIndex;
+    u8 x;
+    u8 y;
 }ppuContext;
 
 
