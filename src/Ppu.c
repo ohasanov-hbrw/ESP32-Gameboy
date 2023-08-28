@@ -11,7 +11,6 @@ ppuContext* getPpuContext(){
 
 void initPpu(){
     PPU.currentFrame = 0;
-    PPU.lineTicks = 0;
     PPU.vBuffer = malloc(YRES * XRES * sizeof(32));
 
     PPU.tCycles = 0;
@@ -19,9 +18,12 @@ void initPpu(){
     PPU.pfc.lineX = 0;
     PPU.pfc.pushedX = 0;
     PPU.pfc.fetchedX = 0;
-    PPU.pfc.pixelFifo.size = 0;
-    PPU.pfc.pixelFifo.head = PPU.pfc.pixelFifo.tail = NULL;
+    PPU.pfc.pixelFifoBackground.size = 0;
+    PPU.pfc.pixelFifoBackground.head = PPU.pfc.pixelFifoBackground.tail = NULL;
+    PPU.pfc.pixelFifoSprite.size = 0;
+    PPU.pfc.pixelFifoSprite.head = PPU.pfc.pixelFifoSprite.tail = NULL;
     PPU.pfc.currentFetchState = FS_TILE;
+    PPU.numberOfOp = 0;
     
     PPU.lineSprites = 0;
     PPU.fetchedEntryCount = 0;
@@ -35,7 +37,7 @@ void initPpu(){
 }
 
 void stepPpu(){
-    PPU.lineTicks++;
+    PPU.tCycles++;
     switch(LCDS_MODE){
         case MODE_OAM:
             oamMode();

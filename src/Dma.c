@@ -15,7 +15,7 @@ static dmaContext DMA = {0};
 void startDma(u8 start){
     DMA.active = true;
     DMA.byte = 0;
-    DMA.delay = 2;
+    DMA.delay = 1;
     DMA.value = start;
 }
 

@@ -109,7 +109,7 @@ void updateDebugWindow(){
     rc.y = 0;
     rc.w = debugScreen->w;
     rc.h = debugScreen->h;
-    SDL_FillRect(debugScreen, &rc, 0xFF111111);
+    SDL_FillRect(debugScreen, &rc, 0xFF101010);
 
     u16 addr = 0x8000;
     for(int y = 0; y < 24; y++){
@@ -152,11 +152,6 @@ void updateUi(){
     SDL_RenderPresent(sdlRenderer);
     updateDebugWindow();
 }
-
-
-
-
-
 
 void CreateText(const char* Message) {
     TextSurface = TTF_RenderText_Solid(CFont, Message, TextColor);

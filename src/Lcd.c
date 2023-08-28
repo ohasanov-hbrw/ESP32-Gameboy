@@ -56,7 +56,8 @@ void writeLcd(u16 address, u8 value){
     u8 offset = (address - 0xFF40);
     u8 *p = (u8 *)&LCD;
     p[offset] = value;
-    if (offset == 6) { 
+
+    if(address == 0xFF46){ 
         startDma(value);
     }
     if(address == 0xFF47){

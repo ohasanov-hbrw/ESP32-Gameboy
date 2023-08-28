@@ -28,7 +28,8 @@ typedef struct{
 
 typedef struct{
     fetchState currentFetchState;
-    fifo pixelFifo;
+    fifo pixelFifoBackground;
+    fifo pixelFifoSprite;
     u8 lineX;
     u8 pushedX;
     u8 fetchedX;
@@ -71,7 +72,6 @@ typedef struct{
     u8 vram[0x2000];
     pixelFifoContext pfc;
     u32 currentFrame;
-    u32 lineTicks;
     u32* vBuffer;
     u8 lineSpriteCount;
     oamLineEntry *lineSprites;
@@ -82,7 +82,8 @@ typedef struct{
     u8 windowLine;
 
     int tCycles;
-
+    u8 numberOfOp;
+    
 }ppuContext;
 
 

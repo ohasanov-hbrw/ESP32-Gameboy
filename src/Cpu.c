@@ -11,7 +11,7 @@ int amogus = 0;
 int lastamogus = 0;
 
 
-#define DEBUG_CPU 0
+#define DEBUG_CPU 1
 
 cpuContext CPU = {0};
 
@@ -53,7 +53,6 @@ bool stepCpu(){
         u16 pc = CPU.registers.pc;
         
         fetchInstruction();
-        waitForCPUCycle(1);
         fetchData();
 #if DEBUG_CPU == 1
         char flags[16];
@@ -77,7 +76,8 @@ bool stepCpu(){
         updateDebug();
         printDebug();
 #endif
-       execute();
+        execute();
+        waitForCPUCycle(1);
         
     }
     else{
