@@ -109,7 +109,7 @@ void updateDebugWindow(){
     rc.y = 0;
     rc.w = debugScreen->w;
     rc.h = debugScreen->h;
-    SDL_FillRect(debugScreen, &rc, 0xFF101010);
+    SDL_FillRect(debugScreen, &rc, 0xFF555555);
 
     u16 addr = 0x8000;
     for(int y = 0; y < 24; y++){

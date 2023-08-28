@@ -75,12 +75,8 @@ int runEmulator(int argc, char **argv){
     }
     u32 previousFrame = 0;
     while(!emulator.killEmu){
-        delay(1);
-        if(previousFrame != getPpuContext()->currentFrame){
-            updateUi();
-            previousFrame = getPpuContext()->currentFrame;
-        }
-        
+        delay(10);
+        updateUi();
         handleEventsUi();
     }
     return 0;

@@ -24,11 +24,12 @@ void initPpu(){
     PPU.pfc.pixelFifoSprite.head = PPU.pfc.pixelFifoSprite.tail = NULL;
     PPU.pfc.currentFetchState = FS_TILE;
     PPU.numberOfOp = 0;
-    
+
     PPU.lineSprites = 0;
     PPU.fetchedEntryCount = 0;
     PPU.windowLine = 0;
-
+    PPU.enableWindow = false;
+    
     initLcd();
     LCDS_MODE_SET(MODE_OAM);
 

@@ -95,6 +95,7 @@ void writeBus(u16 address, u8 value){
     }
     else{
         writeToHram(address, value);
+        return;
     }
 }
 

@@ -78,7 +78,7 @@ void loadSpriteData(u8 offset){
     
 }
 
-void pipelinePush(){
+bool pipelinePush(){
     if(getPpuContext()->pfc.pixelFifoBackground.size > 8){
         u32 pixelDataBg = pixelFifoBackgroundPop();
         if(getPpuContext()->pfc.lineX >= (getLcdContext()->scrollX % 8)){
@@ -86,7 +86,9 @@ void pipelinePush(){
             getPpuContext()->pfc.pushedX++;
         }
         getPpuContext()->pfc.lineX++;
+        return true;
     }
+    return false;
 }
 
 void pipelineFetch(){
@@ -148,11 +150,29 @@ void pipelineFetch(){
 }
 
 void processPipeline(){
+    if(getPpuContext()->tCycles == 81){
+        pipelineFifoSpriteReset();
+        pipelineFifoBackgroundReset();
+        getPpuContext()->pfc.currentFetchState = FS_TILE;
+    }
+
     getPpuContext()->pfc.mapY = (getLcdContext()->lY + getLcdContext()->scrollY);
     getPpuContext()->pfc.mapX = (getPpuContext()->pfc.fetchedX + getLcdContext()->scrollX);
     getPpuContext()->pfc.tileY = ((getLcdContext()->lY + getLcdContext()->scrollY) % 8) * 2;
-    if(getPpuContext()->tCycles == 81){
-        //empty fifo
+    u16 xLocation = getPpuContext()->pfc.mapX;
+    if(LCDC_WIN_ENABLE
+    && getPpuContext()->pfc.pushedX >= getLcdContext()->winX - 7
+    && getPpuContext()->pfc.pushedX < getLcdContext()->winX - 7 + 256
+    && getLcdContext()->lY >= getLcdContext()->winY
+    && getLcdContext()->lY < getLcdContext()->winY + 256){
+        pipelineFifoSpriteReset();
+        pipelineFifoBackgroundReset();
+        getPpuContext()->pfc.currentFetchState = FS_TILE;
+        getPpuContext()->enableWindow = true;
+        getPpuContext()->windowLine = getLcdContext()->lY - getLcdContext()->winY;
+    }
+    else{
+        getPpuContext()->enableWindow = false;
     }
     pipelineFetch();
     pipelinePush();

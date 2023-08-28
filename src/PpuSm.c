@@ -73,7 +73,15 @@ void oamMode(){
 }
 
 void xferMode(){
-
+    processPipeline();
+    if(getPpuContext()->pfc.pushedX >= XRES){
+        pipelineFifoBackgroundReset();
+        pipelineFifoSpriteReset();
+        LCDS_MODE_SET(MODE_HBLANK);
+        if(LCDS_STAT_INT(SS_HBLANK)){
+            requestInterrupt(IT_LCD_STAT);
+        }
+    }
 }
 
 void vblankMode(){

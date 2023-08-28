@@ -35,8 +35,8 @@ typedef struct{
     u8 fetchedX;
     u8 bgwFetchData[3];
     u8 entryFetchData[6];
-    u8 mapY;
-    u8 mapX;
+    u16 mapY;
+    u16 mapX;
     u8 tileY;
     u8 fifoX;
 }pixelFifoContext;
@@ -83,7 +83,9 @@ typedef struct{
 
     int tCycles;
     u8 numberOfOp;
-    
+
+    bool enableWindow;
+
 }ppuContext;
 
 
@@ -99,6 +101,7 @@ void writeVram(u16, u8);
 u8 readVram(u16);
 
 void processPipeline();
-void pipelineFifoReset();
+void pipelineFifoBackgroundReset();
+void pipelineFifoSpriteReset();
 
 bool windowVisible();
