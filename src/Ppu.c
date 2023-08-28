@@ -29,6 +29,7 @@ void initPpu(){
     PPU.fetchedEntryCount = 0;
     PPU.windowLine = 0;
     PPU.enableWindow = false;
+    PPU.lastTileIndex = -1;
     
     initLcd();
     LCDS_MODE_SET(MODE_OAM);

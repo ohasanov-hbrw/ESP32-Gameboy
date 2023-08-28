@@ -84,8 +84,12 @@ typedef struct{
     int tCycles;
     u8 numberOfOp;
 
+
+    u8 currentIndexOfSprite;
+
     bool enableWindow;
 
+    int lastTileIndex;
 }ppuContext;
 
 
@@ -102,6 +106,6 @@ u8 readVram(u16);
 
 void processPipeline();
 void pipelineFifoBackgroundReset();
-void pipelineFifoSpriteReset();
+
 
 bool windowVisible();
