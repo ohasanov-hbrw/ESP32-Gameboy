@@ -31,6 +31,11 @@ void initPpu(){
     PPU.enableWindow = false;
     PPU.lastTileIndex = -1;
 
+    PPU.scrollX = -1;
+    PPU.lastX = -1;
+    PPU.scrollY = -1;
+    PPU.lastY = -1;
+
     initLcd();
     LCDS_MODE_SET(MODE_OAM);
 

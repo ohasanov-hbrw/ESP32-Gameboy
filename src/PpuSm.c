@@ -74,6 +74,11 @@ void oamMode(){
         getPpuContext()->pfc.fetchedX = 0;
         getPpuContext()->pfc.pushedX = 0;
         getPpuContext()->pfc.fifoX = 0;
+        getPpuContext()->lastX = -1;
+        getPpuContext()->lastY = -1;
+        getPpuContext()->scrollX = getLcdContext()->scrollX;
+        getPpuContext()->scrollY = getLcdContext()->scrollY;
+        getPpuContext()->resetScroll = true;
         getPpuContext()->lastTileIndex = -1;
         getPpuContext()->enableWindow = false;
         xferMode();

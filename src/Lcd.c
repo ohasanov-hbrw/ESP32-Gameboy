@@ -32,7 +32,7 @@ void initLcd(){
 u8 readLcd(u16 address){
     u8 offset = (address - 0xFF40);
     u8 *p = (u8 *)&LCD;
-    printf("reading from lcd\n");
+    //printf("reading from lcd\n");
     return p[offset];
 }
 
@@ -58,7 +58,7 @@ void writeLcd(u16 address, u8 value){
     u8 *p = (u8 *)&LCD;
     p[offset] = value;
 
-    printf("writing to lcd\n");
+    //printf("writing to lcd\n");
     if(offset == 6){ 
         startDma(value);
     }
