@@ -264,9 +264,10 @@ void fakePush(){
     int windowX = getLcdContext()->winX - 7;
 
 
-    if(x >= windowX && x < windowX + 256 && y >= windowY && y < windowY + 256 && LCDC_WIN_ENABLE){
+    if(x >= windowX && x < windowX + 256 && getPpuContext()->windowLatch && LCDC_WIN_ENABLE){
         int mapX = (x - windowX) % 256;
-        int mapY = (y - windowY - 1) % 256;
+        int mapY = getPpuContext()->windowLine % 256;
+        //printf("mapY = %d\n", mapY);
 
         u16 address = 0x9800;
         if(BIT(getLcdContext()->lcdC, 6)){
@@ -284,11 +285,11 @@ void fakePush(){
             int bit = 7 - (mapX % 8);
             u8 high = !!(getPpuContext()->pfc.bgwFetchData[1] & (1 << bit));
             u8 low = !!(getPpuContext()->pfc.bgwFetchData[2] & (1 << bit)) << 1;
-            pixelDataBg = getLcdContext()->bgc[high | low] | 123;
+            pixelDataBg = getLcdContext()->bgc[high | low] & 0xFFFF00FF; //getLcdContext()->bgc[high | low] | 123 
             //printf("stuff on window on line %d \n", y);
         }
         else{
-            pixelDataBg = getLcdContext()->bgc[0]; //getLcdContext()->bgc[0]
+            pixelDataBg = 0xFFFF00FF; //getLcdContext()->bgc[0]
         }
     }
     else{

@@ -31,7 +31,7 @@ void initPpu(){
     PPU.inWindow = false;
     PPU.fetchedFakePixels = 0;
     PPU.pushedFakePixels = 0;
-
+    PPU.windowLatch = false;
     //BIT_SET(getLcdContext()->lcdC, 5, false);
 
     initLcd();

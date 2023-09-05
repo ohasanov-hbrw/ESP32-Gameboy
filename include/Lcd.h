@@ -42,6 +42,8 @@ lcdContext *getLcdContext();
 #define LCDS_LYC (BIT(getLcdContext()->lcdS, 2))
 #define LCDS_LYC_SET(b) (BIT_SET(getLcdContext()->lcdS, 2, b))
 
+#define LCD_CHECK_WINDOW_STATE (LCDC_WIN_ENABLE && getLcdContext()->winX >= 0 && getLcdContext()->winX <= 166 && getLcdContext()->winY >= 0 && getLcdContext()->winY < YRES && getLcdContext()->lY >= getLcdContext()->winY && getLcdContext()->lY < getLcdContext()->winY + YRES)
+
 typedef enum {
     SS_HBLANK = (1 << 3),
     SS_VBLANK = (1 << 4),

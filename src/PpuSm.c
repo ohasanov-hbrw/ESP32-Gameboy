@@ -7,7 +7,13 @@
 
 void incrementLy(){ 
     getLcdContext()->lY++;
+
+    if(LCD_CHECK_WINDOW_STATE){
+        getPpuContext()->windowLine++;
+    }
+
     if(getLcdContext()->lY == getLcdContext()->lYCompare){
+        printf("requested interrupt at line %d\n", getLcdContext()->lY);
         LCDS_LYC_SET(1);
         if(LCDS_STAT_INT(SS_LYC)){
             requestInterrupt(IT_LCD_STAT);
@@ -65,6 +71,11 @@ void oamMode(){
         LCDS_MODE_SET(MODE_VBLANK);
         return;
     }
+    //printf("y %d    wy %d\n", getLcdContext()->lY, getLcdContext()->winY);
+    if(getLcdContext()->lY == getLcdContext()->winY && LCDC_WIN_ENABLE){
+        getPpuContext()->windowLatch = true;
+        //printf("enable window at y %d\n", getLcdContext()->lY);
+    }
     if(getPpuContext()->tCycles > 80){
         LCDS_MODE_SET(MODE_XFER);
         getPpuContext()->pfc.currentFetchState = FS_TILE;
@@ -107,6 +118,7 @@ void vblankMode(){
         if (getLcdContext()->lY >= LINES_PER_FRAME){
             LCDS_MODE_SET(MODE_OAM);
             getLcdContext()->lY = 0;
+            getPpuContext()->windowLatch = false;
             getPpuContext()->windowLine = 0;
         }
         getPpuContext()->tCycles = 0;

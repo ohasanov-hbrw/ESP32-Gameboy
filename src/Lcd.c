@@ -62,7 +62,7 @@ void writeLcd(u16 address, u8 value){
     if(offset == 6){ 
         startDma(value);
     }
-    if(address == 0xFF47){
+    else if(address == 0xFF47){
         updatePalette(value, 0);
     }
     else if(address == 0xFF48){
@@ -72,9 +72,15 @@ void writeLcd(u16 address, u8 value){
         updatePalette(value & 0b11111100, 2);
     }
     else if(address == 0xFF4B){
-        LCD.winX = value;
+        LCD.winX = value /*% 167*/;
+        //printf("winx: %d  at line %d with lyc = %d\n", LCD.winX, LCD.lY, LCD.lYCompare);
     }
     else if(address == 0xFF4A){
-        LCD.winY = value;
+        LCD.winY = value /*% 144*/;
+        //printf("winy: %d  at line %d with lyc = %d\n", LCD.winY, LCD.lY, LCD.lYCompare);
     }
+
+    /*if(LCDC_WIN_ENABLE){
+        printf("winx: %d  winy: %d  at line %d with lyc = %d\n", LCD.winX, LCD.winY, LCD.lY, LCD.lYCompare);
+    }*/
 }
