@@ -87,16 +87,9 @@ typedef struct{
 
     u8 currentIndexOfSprite;
 
-    bool enableWindow;
-
-    int lastTileIndex;
-    u8 x;
-    u8 y;
-    u8 lastX;
-    u8 lastY;
-    u8 scrollX;
-    u8 scrollY;
-    bool resetScroll;
+    int fetchedFakePixels;
+    int pushedFakePixels;
+    bool inWindow;
 }ppuContext;
 
 

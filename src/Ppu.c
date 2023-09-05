@@ -28,13 +28,11 @@ void initPpu(){
     PPU.lineSprites = 0;
     PPU.fetchedEntryCount = 0;
     PPU.windowLine = 0;
-    PPU.enableWindow = false;
-    PPU.lastTileIndex = -1;
+    PPU.inWindow = false;
+    PPU.fetchedFakePixels = 0;
+    PPU.pushedFakePixels = 0;
 
-    PPU.scrollX = -1;
-    PPU.lastX = -1;
-    PPU.scrollY = -1;
-    PPU.lastY = -1;
+    //BIT_SET(getLcdContext()->lcdC, 5, false);
 
     initLcd();
     LCDS_MODE_SET(MODE_OAM);

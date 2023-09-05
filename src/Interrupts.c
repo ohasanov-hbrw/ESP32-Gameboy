@@ -18,6 +18,7 @@ bool interruptCheck(cpuContext * CPU, u16 address, interruptType t){
     return false;
 }
 
+
 void handleInterrupts(cpuContext * CPU){
     if(interruptCheck(CPU, 0x40, IT_VBLANK));
     else if(interruptCheck(CPU, 0x48, IT_LCD_STAT));

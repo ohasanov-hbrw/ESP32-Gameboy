@@ -20,7 +20,6 @@ void incrementLy(){
 
 void loadLineSprites(int i){
     int currentLine = getLcdContext()->lY;
-    memset(getPpuContext()->lineEntryArray, 0, sizeof(getPpuContext()->lineEntryArray));
     u8 spriteSize = LCDC_OBJ_HEIGHT;
     oamEntry e = getPpuContext()->oamRam[i];
     if(e.x == 0){
@@ -30,7 +29,7 @@ void loadLineSprites(int i){
         return;
     }
     if(e.y - 16 <= currentLine && e.y + spriteSize - 16 > currentLine){
-        oamLineEntry *entry = &getPpuContext()->lineEntryArray[getPpuContext()->lineSpriteCount];
+        oamLineEntry *entry = &getPpuContext()->lineEntryArray[getPpuContext()->lineSpriteCount++];
         entry->entry = e;
         entry->next = NULL;
         if(!getPpuContext()->lineSprites || getPpuContext()->lineSprites->entry.x > e.x){
@@ -64,7 +63,6 @@ static long frame_count = 0;
 void oamMode(){
     if(getLcdContext()->lY >= YRES){
         LCDS_MODE_SET(MODE_VBLANK);
-        vblankMode();
         return;
     }
     if(getPpuContext()->tCycles > 80){
@@ -74,29 +72,27 @@ void oamMode(){
         getPpuContext()->pfc.fetchedX = 0;
         getPpuContext()->pfc.pushedX = 0;
         getPpuContext()->pfc.fifoX = 0;
-        getPpuContext()->lastX = -1;
-        getPpuContext()->lastY = -1;
-        getPpuContext()->scrollX = getLcdContext()->scrollX;
-        getPpuContext()->scrollY = getLcdContext()->scrollY;
-        getPpuContext()->resetScroll = true;
-        getPpuContext()->lastTileIndex = -1;
-        getPpuContext()->enableWindow = false;
-        xferMode();
+        getPpuContext()->fetchedFakePixels = 0;
+        getPpuContext()->pushedFakePixels = 0;
+        getPpuContext()->inWindow = false;
         return;
     }
     if(getPpuContext()->tCycles == 1){
         getPpuContext()->lineSprites = 0;
         getPpuContext()->lineSpriteCount = 0;
         getPpuContext()->currentIndexOfSprite = 0;
+        memset(getPpuContext()->lineEntryArray, 0, sizeof(getPpuContext()->lineEntryArray));
     }
     if(getPpuContext()->tCycles % 2 == 0){
         loadLineSprites(getPpuContext()->tCycles / 2);
+        /*if(getLcdContext()->lY == 73)
+            printf("C: %d I: %d\n", getPpuContext()->lineSpriteCount, getPpuContext()->tCycles / 2);*/
     }
 }
 
 void xferMode(){
     processPipeline();
-    if(getPpuContext()->pfc.pushedX >= XRES || getPpuContext()->tCycles > 400){
+    if(getPpuContext()->pfc.pushedX >= XRES || getPpuContext()->tCycles > 400 || getPpuContext()->pushedFakePixels >= XRES){
         pipelineFifoBackgroundReset();
         LCDS_MODE_SET(MODE_HBLANK);
         if(LCDS_STAT_INT(SS_HBLANK)){
@@ -127,8 +123,6 @@ void hblankMode(){
                 requestInterrupt(IT_LCD_STAT);
             }
             getPpuContext()->currentFrame++;
-
-            //calc FPS...
             u32 end = getTicks();
             u32 frame_time = end - prev_frame_time;
 

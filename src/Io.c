@@ -9,6 +9,10 @@ static char serialData[2];
 static u8 ly = 0;
 
 u8 readIo(u16 address){
+    /*if(address == 0xFF00){
+        return 1;
+    }*/
+
     if(address == 0xFF01){
         return serialData[0];
     }
