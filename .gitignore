@@ -36,7 +36,6 @@
 bin
 object
 roms
-gb-test-roms-master
 
 *.xz
 *.tar.xz
