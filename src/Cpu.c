@@ -52,9 +52,11 @@ bool stepCpu(){
     if(!CPU.halted){
         u16 pc = CPU.registers.pc;
         
+        waitOneCycle();
         fetchInstruction();
+        waitThreeCycles();
+        //waitForCPUCycle(1);
 
-        waitForCPUCycle(1);
         fetchData();
 
 #if DEBUG_CPU == 1
@@ -82,6 +84,7 @@ bool stepCpu(){
         printDebug();
 #endif
         execute();
+        
         
     }
     else{

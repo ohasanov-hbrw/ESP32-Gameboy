@@ -7,6 +7,7 @@ typedef struct{
     u8 tima;
     u8 tma;
     u8 tac;
+    int reload;
 }timerContext;
 
 

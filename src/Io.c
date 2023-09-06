@@ -32,6 +32,10 @@ u8 readIo(u16 address){
         return readLcd(address);
     }
 
+    if(BETWEEN(address, 0xFF10, 0xFF3F)){
+        return 0;
+    }
+
     if (address == 0xFF0F) {
         return readInterruptFlags();
     }
@@ -58,6 +62,10 @@ void writeIo(u16 address, u8 value){
     if(BETWEEN(address, 0xFF04, 0xFF07)){
         writeTimer(address, value);
         printf("wrote to timer 0x%04X %d\n",address, value);
+        return;
+    }
+
+    if(BETWEEN(address, 0xFF10, 0xFF3F)){
         return;
     }
 

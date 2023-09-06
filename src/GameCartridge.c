@@ -1,10 +1,15 @@
 #include <GameCartridge.h>
-
+#include <string.h>
 typedef struct{
     char filename[1024];
     u32 romSize;
     u8 *romData;
+    u32 ramSize;
+    u8 *ramData;
     romHeader *header;
+    int romOffset;
+    int ramOffset;
+    bool ramEnable;
 }cartContext;
 
 static cartContext cartridge;
@@ -128,6 +133,9 @@ const char *getCartType(){
 }
 
 bool loadCartridge(char *cart){
+    cartridge.romOffset = 0;
+    cartridge.ramOffset = 0;
+    cartridge.ramEnable = false;
     snprintf(cartridge.filename, sizeof(cartridge.filename), "%s", cart);
 
     FILE *fp = fopen(cart, "r");
@@ -159,6 +167,32 @@ bool loadCartridge(char *cart){
     printf("\t Licence Code : %2.2X (%s)\n", cartridge.header->licCode, getCartLic());
     printf("\t ROM Version  : %2.2X\n", cartridge.header->version);
 
+    if(cartridge.header->ramSize == 0x00){
+        cartridge.ramSize = 0;
+    }
+    else if(cartridge.header->ramSize == 0x01){
+        cartridge.ramSize = 0;
+    }
+    else{
+        cartridge.ramSize = 0;
+        if(cartridge.header->ramSize == 0x02){
+            cartridge.ramSize = 8192 * 1;
+        }
+        else if(cartridge.header->ramSize == 0x03){
+            cartridge.ramSize = 8192 * 4;
+        }
+        else if(cartridge.header->ramSize == 0x04){
+            cartridge.ramSize = 8192 * 16;
+        }
+        else if(cartridge.header->ramSize == 0x05){
+            cartridge.ramSize = 8192 * 8;
+        }
+        cartridge.romData = malloc(cartridge.ramSize);
+        memset(cartridge.romData, 0, sizeof(cartridge.romData));
+        
+    }
+    printf("allocated %dKiB of ram\n", cartridge.ramSize);
+
     u16 x = 0;
     for(u16 i = 0x0134; i <= 0x014C; i++){
         x = x - cartridge.romData[i] - 1;
@@ -170,10 +204,48 @@ bool loadCartridge(char *cart){
 }
 
 u8 readFromCartridge(u16 address){
-    return cartridge.romData[address];
+    if(address < 0x4000){
+        return cartridge.romData[address];
+    }
+    else if(address < 0x8000){
+        return cartridge.romData[address + cartridge.romOffset];
+    }
+    else if(address < 0xC000){
+
+    }
 }
 
 void writeToCartridge(u16 address, u8 value){
     //printf("\tERR: WRT CART: 0x%04X 0x%02X\n", address, value);
     //NO_IMPLEMENTATION
+    if(address < 0x2000){
+        if(value == 0x00){
+            cartridge.ramEnable = false;
+        }
+        else if(value == 0x0A){
+            cartridge.ramEnable = true;
+        }
+    }
+    else if(address < 0x4000){
+        u8 mask = 0b00011111;
+        if(32 << cartridge.header->romSize == 256){
+            mask = 0b00001111;
+        }
+        else if(32 << cartridge.header->romSize == 128){
+            mask = 0b00000111;
+        }
+        else if(32 << cartridge.header->romSize == 64){
+            mask = 0b00000011;
+        }
+        else if(32 << cartridge.header->romSize == 32){
+            mask = 0b00000001;
+        }
+        value &= mask;
+        if(value == 0x00){
+            value = 0x01;
+        }
+        cartridge.romOffset = 0x4000 * (value - 1);
+        printf("changed bank to 0x%02x\n", value);
+    }
+
 }

@@ -96,3 +96,18 @@ void waitForCPUCycle(int cycles){
         stepDma();
     }
 }
+
+void waitOneCycle(){
+    emulator.ticks++;
+    stepTimer();
+    stepPpu();
+}
+
+void waitThreeCycles(){
+    for(int n = 0; n < 3; n++){
+        emulator.ticks++;
+        stepTimer();
+        stepPpu();
+    }
+    stepDma();
+}

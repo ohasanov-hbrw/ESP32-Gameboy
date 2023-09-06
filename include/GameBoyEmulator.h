@@ -14,3 +14,5 @@ int runEmulator(int argc, char **argv);
 EmulatorContext *GetEmulatorContext();
 
 void waitForCPUCycle(int cycles);
+void waitOneCycle();
+void waitThreeCycles();
