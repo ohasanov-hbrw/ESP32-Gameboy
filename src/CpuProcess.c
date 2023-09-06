@@ -37,6 +37,7 @@ static void nopProcess(cpuContext *CPU){
 }
 
 static void ldProcess(cpuContext *CPU){
+
     if(CPU->destinationIsMemory){
         if(is16Bit(CPU->currentInstruction->reg2)){
             waitForCPUCycle(1);
@@ -57,6 +58,7 @@ static void ldProcess(cpuContext *CPU){
         setRegister(CPU->currentInstruction->reg1, readRegister(CPU->currentInstruction->reg2) + (int8_t)CPU->fetchedData);
         return;
     }
+
     setRegister(CPU->currentInstruction->reg1, CPU->fetchedData);
 }
 
@@ -439,6 +441,7 @@ static void rraProcess(cpuContext *CPU){
 
 static void stopProcess(cpuContext *CPU){
     printf("\tERR: CPU STOP\n");
+    
     //NO_IMPLEMENTATION
 }
 

@@ -90,6 +90,9 @@ void oamMode(){
         getPpuContext()->wasInWindow = false;
         return;
     }
+    if(getPpuContext()->tCycles == 0){
+        printf("amogus\n");
+    }
     if(getPpuContext()->tCycles == 1){
         getPpuContext()->lineSprites = 0;
         getPpuContext()->lineSpriteCount = 0;
@@ -97,7 +100,7 @@ void oamMode(){
         memset(getPpuContext()->lineEntryArray, 0, sizeof(getPpuContext()->lineEntryArray));
     }
     if(getPpuContext()->tCycles % 2 == 0){
-        loadLineSprites(getPpuContext()->tCycles / 2);
+        loadLineSprites(getPpuContext()->tCycles / 2  - 1);
         /*if(getLcdContext()->lY == 73)
             printf("C: %d I: %d\n", getPpuContext()->lineSpriteCount, getPpuContext()->tCycles / 2);*/
     }
