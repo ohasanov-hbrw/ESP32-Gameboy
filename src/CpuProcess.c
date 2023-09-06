@@ -44,6 +44,7 @@ static void ldProcess(cpuContext *CPU){
         }
         else{
             writeBus(CPU->memoryDestination, CPU->fetchedData);
+            //printf("writing to memory address 0x%04X the value %d\n", CPU->memoryDestination, CPU->fetchedData);
         }
         waitForCPUCycle(1);
         return;

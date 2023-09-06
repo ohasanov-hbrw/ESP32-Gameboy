@@ -54,6 +54,14 @@ void updatePalette(u8 pdata, u8 pal) {
 
 
 void writeLcd(u16 address, u8 value){
+    if(address == 0xFF4B){
+        LCD.winX = value /*% 167*/;
+        return;
+    }
+    else if(address == 0xFF4A){
+        LCD.winY = value /*% 144*/;
+        return;
+    }
     u8 offset = (address - 0xFF40);
     u8 *p = (u8 *)&LCD;
     p[offset] = value;
@@ -71,14 +79,7 @@ void writeLcd(u16 address, u8 value){
     else if(address == 0xFF49){
         updatePalette(value & 0b11111100, 2);
     }
-    else if(address == 0xFF4B){
-        LCD.winX = value /*% 167*/;
-        //printf("winx: %d  at line %d with lyc = %d\n", LCD.winX, LCD.lY, LCD.lYCompare);
-    }
-    else if(address == 0xFF4A){
-        LCD.winY = value /*% 144*/;
-        //printf("winy: %d  at line %d with lyc = %d\n", LCD.winY, LCD.lY, LCD.lYCompare);
-    }
+    
 
     /*if(LCDC_WIN_ENABLE){
         printf("winx: %d  winy: %d  at line %d with lyc = %d\n", LCD.winX, LCD.winY, LCD.lY, LCD.lYCompare);

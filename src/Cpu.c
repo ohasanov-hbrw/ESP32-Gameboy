@@ -55,8 +55,8 @@ bool stepCpu(){
         fetchInstruction();
 
         waitForCPUCycle(1);
-        
         fetchData();
+        
 #if DEBUG_CPU == 1
         char flags[16];
         sprintf(flags, "%c%c%c%c", 
@@ -76,11 +76,13 @@ bool stepCpu(){
             printf("Unknown Instruction! %02X\n", CPU.currentOpcode);
             exit(-7);
         }
+        //if(CPU.currentInstruction->type == IN_HALT) exit(-8);
         
         updateDebug();
         printDebug();
 #endif
         execute();
+        
     }
     else{
         waitForCPUCycle(1);

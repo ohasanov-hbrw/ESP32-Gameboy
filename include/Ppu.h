@@ -91,6 +91,8 @@ typedef struct{
     int pushedFakePixels;
     bool inWindow;
     bool windowLatch;
+
+    bool wasInWindow;
 }ppuContext;
 
 

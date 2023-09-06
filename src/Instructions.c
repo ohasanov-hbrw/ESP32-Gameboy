@@ -285,7 +285,7 @@ instruction *getInstructionFromOpcode(u8 opcode){
 }
 
 char *instructionsLookupTable[] = {
- "<NONE>",
+    "<NONE>",
     "NOP",
     "LD",
     "INC",

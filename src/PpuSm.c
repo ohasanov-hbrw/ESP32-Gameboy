@@ -8,12 +8,13 @@
 void incrementLy(){ 
     getLcdContext()->lY++;
 
-    if(LCD_CHECK_WINDOW_STATE){
+    if(getPpuContext()->wasInWindow){
         getPpuContext()->windowLine++;
+        getPpuContext()->wasInWindow = false;
     }
 
     if(getLcdContext()->lY == getLcdContext()->lYCompare){
-        printf("requested interrupt at line %d\n", getLcdContext()->lY);
+        //printf("requested interrupt at line %d\n", getLcdContext()->lY);
         LCDS_LYC_SET(1);
         if(LCDS_STAT_INT(SS_LYC)){
             requestInterrupt(IT_LCD_STAT);
@@ -86,6 +87,7 @@ void oamMode(){
         getPpuContext()->fetchedFakePixels = 0;
         getPpuContext()->pushedFakePixels = 0;
         getPpuContext()->inWindow = false;
+        getPpuContext()->wasInWindow = false;
         return;
     }
     if(getPpuContext()->tCycles == 1){
@@ -115,6 +117,7 @@ void xferMode(){
 void vblankMode(){
     if (getPpuContext()->tCycles >= TICKS_PER_LINE){
         incrementLy();
+        getPpuContext()->wasInWindow = false;
         if (getLcdContext()->lY >= LINES_PER_FRAME){
             LCDS_MODE_SET(MODE_OAM);
             getLcdContext()->lY = 0;
@@ -128,6 +131,7 @@ void vblankMode(){
 void hblankMode(){
     if (getPpuContext()->tCycles >= TICKS_PER_LINE) {
         incrementLy();
+        getPpuContext()->wasInWindow = false;
         if (getLcdContext()->lY >= YRES) {
             LCDS_MODE_SET(MODE_VBLANK);
             requestInterrupt(IT_VBLANK);

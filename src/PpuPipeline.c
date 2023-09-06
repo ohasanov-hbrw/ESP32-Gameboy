@@ -285,12 +285,13 @@ void fakePush(){
             int bit = 7 - (mapX % 8);
             u8 high = !!(getPpuContext()->pfc.bgwFetchData[1] & (1 << bit));
             u8 low = !!(getPpuContext()->pfc.bgwFetchData[2] & (1 << bit)) << 1;
-            pixelDataBg = getLcdContext()->bgc[high | low] & 0xFFFF00FF; //getLcdContext()->bgc[high | low] | 123 
+            pixelDataBg = getLcdContext()->bgc[high | low]/* & 0xFFFF00FF*/; //getLcdContext()->bgc[high | low] | 123 
             //printf("stuff on window on line %d \n", y);
         }
         else{
             pixelDataBg = 0xFFFF00FF; //getLcdContext()->bgc[0]
         }
+        getPpuContext()->wasInWindow = true;
     }
     else{
         int mapX = (x + getLcdContext()->scrollX) % 256;
