@@ -61,7 +61,7 @@ void writeIo(u16 address, u8 value){
 
     if(BETWEEN(address, 0xFF04, 0xFF07)){
         writeTimer(address, value);
-        printf("wrote to timer 0x%04X %d\n",address, value);
+        //printf("wrote to timer 0x%04X %d\n",address, value);
         return;
     }
 

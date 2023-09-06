@@ -245,7 +245,7 @@ void writeToCartridge(u16 address, u8 value){
             value = 0x01;
         }
         cartridge.romOffset = 0x4000 * (value - 1);
-        printf("changed bank to 0x%02x\n", value);
+        //printf("changed bank to 0x%02x\n", value);
     }
 
 }
