@@ -3,6 +3,7 @@
 #include <GameBoyEmulator.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <Gamepad.h>
 
 SDL_Window *sdlWindow;
 SDL_Renderer *sdlRenderer;
@@ -44,11 +45,11 @@ void initUi(){
                                                 SCREEN_WIDTH, SCREEN_HEIGHT);
 
 
-    SDL_CreateWindowAndRenderer(16 * 8 * scale, 32 * 8 * scale, 0, 
+    SDL_CreateWindowAndRenderer(16 * 8 * scale, 24 * 8 * scale, 0, 
         &sdlDebugWindow, &sdlDebugRenderer);
 
     debugScreen = SDL_CreateRGBSurface(0, (16 * 8 * scale) + (16 * scale), 
-                                            (32 * 8 * scale) + (64 * scale), 32,
+                                            (24 * 8 * scale) + (64 * scale), 32,
                                             0x00FF0000,
                                             0x0000FF00,
                                             0x000000FF,
@@ -58,7 +59,7 @@ void initUi(){
                                             SDL_PIXELFORMAT_ARGB8888,
                                             SDL_TEXTUREACCESS_STREAMING,
                                             (16 * 8 * scale) + (16 * scale), 
-                                            (32 * 8 * scale) + (64 * scale));
+                                            (24 * 8 * scale) + (64 * scale));
 
     int x, y;
     SDL_GetWindowPosition(sdlWindow, &x, &y);
@@ -172,6 +173,21 @@ void RenderText() {
     SDL_RenderPresent(sdlRenderer); // Render everything that's on the queue.
 }
 
+void uiOnKey(bool down, u32 key_code){
+    switch(key_code){
+        case SDLK_z: getGamepadState()->b = down; break;
+        case SDLK_x: getGamepadState()->a = down; break;
+        case SDLK_m: getGamepadState()->start = down; break;
+        case SDLK_n: getGamepadState()->select = down; break;
+        case SDLK_UP: getGamepadState()->up = down; break;
+        case SDLK_DOWN: getGamepadState()->down = down; break;
+        case SDLK_LEFT: getGamepadState()->left = down; break;
+        case SDLK_RIGHT: getGamepadState()->right = down; break;
+    }
+}
+
+
+
 void handleEventsUi(){
     SDL_Event e;
     SDL_UpdateWindowSurface(sdlWindow);
@@ -180,6 +196,13 @@ void handleEventsUi(){
         //TODO SDL_UpdateWindowSurface(sdlWindow);
         //TODO SDL_UpdateWindowSurface(sdlTraceWindow);
         //TODO SDL_UpdateWindowSurface(sdlDebugWindow);
+        if (e.type == SDL_KEYDOWN) {
+            uiOnKey(true, e.key.keysym.sym);
+        }
+
+        if (e.type == SDL_KEYUP) {
+            uiOnKey(false, e.key.keysym.sym);
+        }
 
         if (e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_CLOSE) {
             GetEmulatorContext()->killEmu = true;

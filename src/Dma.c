@@ -17,7 +17,7 @@ void startDma(u8 start){
     DMA.byte = 0;
     DMA.delay = 2;
     DMA.value = start;
-    printf("DMA START\n");
+    //printf("DMA START\n");
 }
 
 void stepDma(){

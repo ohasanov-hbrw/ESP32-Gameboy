@@ -56,7 +56,7 @@ bool stepCpu(){
 
         waitForCPUCycle(1);
         fetchData();
-        
+
 #if DEBUG_CPU == 1
         char flags[16];
         sprintf(flags, "%c%c%c%c", 

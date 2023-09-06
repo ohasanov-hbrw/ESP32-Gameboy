@@ -29,7 +29,22 @@ static bool is16Bit(registerType rt){
 
 static void noneProcess(cpuContext *CPU){
     printf("\tERR: INV INST\n");
-    //exit(-31);
+    char flags[16];
+    sprintf(flags, "%c%c%c%c", 
+        CPU->registers.f & (1 << 7) ? 'Z' : '-',
+        CPU->registers.f & (1 << 6) ? 'N' : '-',
+        CPU->registers.f & (1 << 5) ? 'H' : '-',
+        CPU->registers.f & (1 << 4) ? 'C' : '-'
+    );
+    char inst[16];
+    instructionToString(CPU, inst);
+    printf("INFO: %08lX - 0x%04X: %-12s (0x%02X 0x%02X 0x%02X) A: 0x%02X F: %s BC: 0x%02X%02X DE: 0x%02X%02X HL: 0x%02X%02X DEST: %d FETCHED: 0x%02X\n", 
+        GetEmulatorContext()->ticks,
+        CPU->registers.pc, inst, CPU->currentOpcode,
+        readBus(CPU->registers.pc + 1), readBus(CPU->registers.pc + 2), CPU->registers.a, flags, CPU->registers.b, CPU->registers.c,
+        CPU->registers.d, CPU->registers.e, CPU->registers.h, CPU->registers.l, CPU->destinationIsMemory, CPU->fetchedData);
+
+    exit(-31);
 }
 
 static void nopProcess(cpuContext *CPU){

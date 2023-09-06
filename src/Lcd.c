@@ -4,7 +4,7 @@
 
 static lcdContext LCD = {0};
 
-static unsigned long defaultColors[4] = {0xFFFFFFFF, 0xFFAAAAAA, 0xFF555555, 0xFF000000}; 
+static unsigned long defaultColors[4] = {0xFF9BBC0F, 0xFF8BAC0F, 0xFF306230, 0xFF0F380F}; 
 
 lcdContext *getLcdContext(){
     return &LCD;

@@ -3,6 +3,7 @@
 #include <Timer.h>
 #include <Dma.h>
 #include <Lcd.h>
+#include <Gamepad.h>
 static char serialData[2];
 
 
@@ -12,6 +13,10 @@ u8 readIo(u16 address){
     /*if(address == 0xFF00){
         return 1;
     }*/
+
+    if (address == 0xFF00) {
+        return getGamePadOutput();
+    }
 
     if(address == 0xFF01){
         return serialData[0];
@@ -35,6 +40,11 @@ u8 readIo(u16 address){
 }
 
 void writeIo(u16 address, u8 value){
+    if (address == 0xFF00) {
+        setSelectGamepad(value);
+        return;
+    }
+
     if(address == 0xFF01){
         serialData[0] = value;
         return;
