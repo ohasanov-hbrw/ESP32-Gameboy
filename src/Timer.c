@@ -48,41 +48,6 @@ void stepTimer(){
         TIMER.tima++;
     }
     //printf("Timer: %d %d %d %d\n", TIMER.div, TIMER.tima,TIMER.tma, TIMER.tac);
-
-    /*u8 ticks = 1;
-
-    u16 div = TIMER.div;
-    u8 tac = TIMER.tac;
-
-    // update DIV's 16bit value
-    TIMER.div += ticks;
-
-    if(timaOverflow){
-        timaOverflow = false;
-        requestInterrupt(IT_TIMER);
-        TIMER.tima = TIMER.tma;
-    }
-
-    // We only update the timer's value at certain frequencies (freq_divider)
-    // Here we compute the number of 'freq' between the old div and the new div
-    // (in clocks, no cycles ! Hence we divide by 4)
-    u16 freq = frequencyDividers[tac & 0x03] / 4;
-    u8 increaseTima = ((div + ticks) / freq) - (div / freq);
-
-    // If bit 2 of TAC is set to 0 then the timer is disabled
-    if(increaseTima && tac & 0x4){
-        u8 tima = readTimer(0xFF05);
-        if (tima == 0xFF) { // overflow
-            // Timer interrupt is delayed 1 cycle (4 clocks) from the TIMA
-            // overflow. The TMA reload to TIMA is also delayed. For one cycle,
-            // after overflowing TIMA, the value in TIMA is 00h, not TMA.
-            writeTimer(0xFF05, 0x00);
-            timaOverflow = true;
-        }
-        else{
-            writeTimer(0xFF05, tima + increaseTima);
-        }
-    }*/
 }
 
 void writeTimer(u16 address, u8 value){

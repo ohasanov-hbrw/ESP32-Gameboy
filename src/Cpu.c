@@ -77,12 +77,7 @@ bool stepCpu(){
             pc, inst, CPU.currentOpcode,
             readBus(pc + 1), readBus(pc + 2), CPU.registers.a, flags, CPU.registers.b, CPU.registers.c,
             CPU.registers.d, CPU.registers.e, CPU.registers.h, CPU.registers.l, CPU.destinationIsMemory, CPU.fetchedData);
-        if (CPU.currentInstruction == NULL){
-            printf("Unknown Instruction! %02X\n", CPU.currentOpcode);
-            exit(-7);
-        }
         //if(CPU.currentInstruction->type == IN_HALT) exit(-8);
-        
         updateDebug();
         printDebug();
 #endif

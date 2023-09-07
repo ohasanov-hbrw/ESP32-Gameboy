@@ -65,6 +65,7 @@ static void inc_b(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_B) + 1;
     setRegister(RT_B, CPU->fetchedData);
+    CPU->fetchedData = readRegister(RT_B);
     cpuSetFlags(CPU, CPU->fetchedData == 0, 0, (CPU->fetchedData & 0x0F) == 0, -1);
 }
 
@@ -73,6 +74,7 @@ static void dec_b(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_B) - 1;
     setRegister(RT_B, CPU->fetchedData);
+    CPU->fetchedData = readRegister(RT_B);
     cpuSetFlags(CPU, CPU->fetchedData == 0, 1, (CPU->fetchedData & 0x0F) == 0x0F, -1);
 }
 
@@ -136,7 +138,6 @@ static void dec_bc(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_BC) - 1;
     setRegister(RT_BC, CPU->fetchedData);
-    cpuSetFlags(CPU, CPU->fetchedData == 0, 1, (CPU->fetchedData & 0x0F) == 0x0F, -1);
     waitForCPUCycle(1);
 }
 
@@ -145,6 +146,7 @@ static void inc_c(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_C) + 1;
     setRegister(RT_C, CPU->fetchedData);
+    CPU->fetchedData = readRegister(RT_C);
     cpuSetFlags(CPU, CPU->fetchedData == 0, 0, (CPU->fetchedData & 0x0F) == 0, -1);
 }
 
@@ -153,6 +155,7 @@ static void dec_c(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_C) - 1;
     setRegister(RT_C, CPU->fetchedData);
+    CPU->fetchedData = readRegister(RT_C);
     cpuSetFlags(CPU, CPU->fetchedData == 0, 1, (CPU->fetchedData & 0x0F) == 0x0F, -1);
 }
 
@@ -214,6 +217,7 @@ static void inc_d(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_D) + 1;
     setRegister(RT_D, CPU->fetchedData);
+    CPU->fetchedData = readRegister(RT_D);
     cpuSetFlags(CPU, CPU->fetchedData == 0, 0, (CPU->fetchedData & 0x0F) == 0, -1);
 }
 
@@ -222,6 +226,7 @@ static void dec_d(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_D) - 1;
     setRegister(RT_D, CPU->fetchedData);
+    CPU->fetchedData = readRegister(RT_D);
     cpuSetFlags(CPU, CPU->fetchedData == 0, 1, (CPU->fetchedData & 0x0F) == 0x0F, -1);
 }
 
@@ -281,7 +286,6 @@ static void dec_de(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_DE) - 1;
     setRegister(RT_DE, CPU->fetchedData);
-    cpuSetFlags(CPU, CPU->fetchedData == 0, 1, (CPU->fetchedData & 0x0F) == 0x0F, -1);
     waitForCPUCycle(1);
 }
 
@@ -290,6 +294,7 @@ static void inc_e(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_E) + 1;
     setRegister(RT_E, CPU->fetchedData);
+    CPU->fetchedData = readRegister(RT_E);
     cpuSetFlags(CPU, CPU->fetchedData == 0, 0, (CPU->fetchedData & 0x0F) == 0, -1);
 }
 
@@ -351,8 +356,8 @@ static void ld_hl_u16(cpuContext *CPU){
 static void ld_mhli_a(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_A);
-    setRegister(RT_HL, readRegister(RT_HL) + 1);
     writeBus(readRegister(RT_HL), CPU->fetchedData);
+    setRegister(RT_HL, readRegister(RT_HL) + 1);
     waitForCPUCycle(1);
 }
 
@@ -369,6 +374,7 @@ static void inc_h(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_H) + 1;
     setRegister(RT_H, CPU->fetchedData);
+    CPU->fetchedData = readRegister(RT_H);
     cpuSetFlags(CPU, CPU->fetchedData == 0, 0, (CPU->fetchedData & 0x0F) == 0, -1);
 }
 
@@ -377,6 +383,7 @@ static void dec_h(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_H) - 1;
     setRegister(RT_H, CPU->fetchedData);
+    CPU->fetchedData = readRegister(RT_H);
     cpuSetFlags(CPU, CPU->fetchedData == 0, 1, (CPU->fetchedData & 0x0F) == 0x0F, -1);
 }
 
@@ -401,7 +408,11 @@ static void daa(cpuContext *CPU){
         value |= 0x60;
         cFlag = 1;
     }
-    setRegister(RT_A, readRegister(RT_A) + CPU_FLAG_N ? -value : value);
+    u8 data = readRegister(RT_A);
+
+    data += CPU_FLAG_N ? -value : value;
+
+    setRegister(RT_A, data);
     cpuSetFlags(CPU, readRegister(RT_A) == 0, -1, 0, cFlag);
 }
 
@@ -435,8 +446,8 @@ static void add_hl_hl(cpuContext *CPU){
 //0x2A
 static void ld_a_mhli(cpuContext *CPU){
     waitForCPUCycle(1);
-    setRegister(RT_HL, readRegister(RT_HL) + 1);
     setRegister(RT_A, readBus(readRegister(RT_HL)));
+    setRegister(RT_HL, readRegister(RT_HL) + 1);
     waitForCPUCycle(1);
 }
 
@@ -445,7 +456,6 @@ static void dec_hl(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_HL) - 1;
     setRegister(RT_HL, CPU->fetchedData);
-    cpuSetFlags(CPU, CPU->fetchedData == 0, 1, (CPU->fetchedData & 0x0F) == 0x0F, -1);
     waitForCPUCycle(1);
 }
 
@@ -454,6 +464,7 @@ static void inc_l(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_L) + 1;
     setRegister(RT_L, CPU->fetchedData);
+    CPU->fetchedData = readRegister(RT_L);
     cpuSetFlags(CPU, CPU->fetchedData == 0, 0, (CPU->fetchedData & 0x0F) == 0, -1);
 }
 
@@ -462,6 +473,7 @@ static void dec_l(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_L) - 1;
     setRegister(RT_L, CPU->fetchedData);
+    CPU->fetchedData = readRegister(RT_L);
     cpuSetFlags(CPU, CPU->fetchedData == 0, 1, (CPU->fetchedData & 0x0F) == 0x0F, -1);
 }
 
@@ -511,8 +523,8 @@ static void ld_sp_u16(cpuContext *CPU){
 static void ld_mhld_a(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_A);
-    setRegister(RT_HL, readRegister(RT_HL) - 1);
     writeBus(readRegister(RT_HL), CPU->fetchedData);
+    setRegister(RT_HL, readRegister(RT_HL) - 1);
     waitForCPUCycle(1);
 }
 
@@ -552,7 +564,7 @@ static void ld_mhl_u8(cpuContext *CPU){
     CPU->fetchedData = readBus(CPU->registers.pc);
     CPU->registers.pc++;
     waitForCPUCycle(1);
-    setRegister(RT_HL, CPU->fetchedData);
+    writeBus(readRegister(RT_HL), CPU->fetchedData);
     waitForCPUCycle(1);
 }
 
@@ -592,8 +604,8 @@ static void add_hl_sp(cpuContext *CPU){
 //0x3A
 static void ld_a_mhld(cpuContext *CPU){
     waitForCPUCycle(1);
-    setRegister(RT_HL, readRegister(RT_HL) - 1);
     setRegister(RT_A, readBus(readRegister(RT_HL)));
+    setRegister(RT_HL, readRegister(RT_HL) - 1);
     waitForCPUCycle(1);
 }
 
@@ -602,7 +614,6 @@ static void dec_sp(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_SP) - 1;
     setRegister(RT_SP, CPU->fetchedData);
-    cpuSetFlags(CPU, CPU->fetchedData == 0, 1, (CPU->fetchedData & 0x0F) == 0x0F, -1);
     waitForCPUCycle(1);
 }
 
@@ -611,6 +622,7 @@ static void inc_a(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_A) + 1;
     setRegister(RT_A, CPU->fetchedData);
+    CPU->fetchedData = readRegister(RT_A);
     cpuSetFlags(CPU, CPU->fetchedData == 0, 0, (CPU->fetchedData & 0x0F) == 0, -1);
 }
 
@@ -619,6 +631,7 @@ static void dec_a(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_A) - 1;
     setRegister(RT_A, CPU->fetchedData);
+    CPU->fetchedData = readRegister(RT_A);
     cpuSetFlags(CPU, CPU->fetchedData == 0, 1, (CPU->fetchedData & 0x0F) == 0x0F, -1);
 }
 
@@ -983,48 +996,48 @@ static void ld_l_a(cpuContext *CPU){
 static void ld_mhl_b(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_B);
-    waitForCPUCycle(1);
     writeBus(readRegister(RT_HL), CPU->fetchedData);
+    waitForCPUCycle(1);
 }
 
 //0x71
 static void ld_mhl_c(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_C);
-    waitForCPUCycle(1);
     writeBus(readRegister(RT_HL), CPU->fetchedData);
+    waitForCPUCycle(1);
 }
 
 //0x72
 static void ld_mhl_d(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_D);
-    waitForCPUCycle(1);
     writeBus(readRegister(RT_HL), CPU->fetchedData);
+    waitForCPUCycle(1); 
 }
 
 //0x73
 static void ld_mhl_e(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_E);
-    waitForCPUCycle(1);
     writeBus(readRegister(RT_HL), CPU->fetchedData);
+    waitForCPUCycle(1);
 }
 
 //0x74
 static void ld_mhl_h(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_H);
-    waitForCPUCycle(1);
     writeBus(readRegister(RT_HL), CPU->fetchedData);
+    waitForCPUCycle(1);
 }
 
 //0x75
 static void ld_mhl_l(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_L);
-    waitForCPUCycle(1);
     writeBus(readRegister(RT_HL), CPU->fetchedData);
+    waitForCPUCycle(1);
 }
 
 //0x76
@@ -1037,8 +1050,8 @@ static void halt(cpuContext *CPU){
 static void ld_mhl_a(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readRegister(RT_A);
-    waitForCPUCycle(1);
     writeBus(readRegister(RT_HL), CPU->fetchedData);
+    waitForCPUCycle(1);
 }
 
 //0x78
@@ -1676,7 +1689,7 @@ static void cp_a_b(cpuContext *CPU){
 //0xB9
 static void cp_a_c(cpuContext *CPU){
     waitForCPUCycle(1);
-    CPU->fetchedData = readRegister(RT_B);
+    CPU->fetchedData = readRegister(RT_C);
     int value = (int)readRegister(RT_A) - (int)CPU->fetchedData;
     cpuSetFlags(CPU, value == 0, 1, ((int)readRegister(RT_A) & 0x0F) - ((int)CPU->fetchedData & 0x0F) < 0, value < 0);
 }
@@ -1894,9 +1907,11 @@ static void cb(cpuContext *CPU){
     registerType reg = decodeRegisterFromData(operation & 0b111);
     u8 bit = (operation >> 3) & 0b111;
     u8 bitOperation = (operation >> 6) & 0b11;
-    u8 registerValue = readRegister8(reg);
+    u8 registerValue = readRegister(reg);
     waitForCPUCycle(1);
-
+    if(reg == RT_HL){
+        registerValue = readBus(readRegister(RT_HL));
+    }
     switch(bitOperation){
         case 1:
             if(reg == RT_HL){
@@ -1905,20 +1920,20 @@ static void cb(cpuContext *CPU){
             cpuSetFlags(CPU, !(registerValue & (1 << bit)), 0, 1, -1);
             return;
         case 2:
+            registerValue &= ~(1 << bit);
             if(reg == RT_HL){
                 waitForCPUCycle(1);
             }
-            registerValue &= ~(1 << bit);
             setRegister8(reg, registerValue);
             if(reg == RT_HL){
                 waitForCPUCycle(1);
             }
             return;    
         case 3:
+            registerValue |= (1 << bit);
             if(reg == RT_HL){
                 waitForCPUCycle(1);
             }
-            registerValue |= (1 << bit);
             setRegister8(reg, registerValue);
             if(reg == RT_HL){
                 waitForCPUCycle(1);
@@ -1940,10 +1955,10 @@ static void cb(cpuContext *CPU){
                 cSet = true;
             }
             setRegister8(reg, result);
+            cpuSetFlags(CPU, result == 0, false, false, cSet);
             if(reg == RT_HL){
                 waitForCPUCycle(1);
             }
-            cpuSetFlags(CPU, result == 0, false, false, cSet);
             return;
         }
         case 1:{
@@ -1954,10 +1969,10 @@ static void cb(cpuContext *CPU){
             registerValue >>= 1;
             registerValue |= (oldValue << 7);
             setRegister8(reg, registerValue);
+            cpuSetFlags(CPU, !registerValue, false, false, oldValue & 1);
             if(reg == RT_HL){
                 waitForCPUCycle(1);
             }
-            cpuSetFlags(CPU, !registerValue, false, false, oldValue & 1);
             return;
         }
         case 2:{
@@ -1982,10 +1997,10 @@ static void cb(cpuContext *CPU){
             registerValue >>= 1;
             registerValue |= (cFlag << 7);
             setRegister8(reg, registerValue);
+            cpuSetFlags(CPU, !registerValue, false, false, oldValue & 1);
             if(reg == RT_HL){
                 waitForCPUCycle(1);
             }
-            cpuSetFlags(CPU, !registerValue, false, false, oldValue & 1);
             return;
         }
         case 4:{
@@ -1995,10 +2010,10 @@ static void cb(cpuContext *CPU){
             u8 oldValue = registerValue;
             registerValue <<= 1;
             setRegister8(reg, registerValue);
+            cpuSetFlags(CPU, !registerValue, false, false, !!(oldValue & 0x80));
             if(reg == RT_HL){
                 waitForCPUCycle(1);
             }
-            cpuSetFlags(CPU, !registerValue, false, false, !!(oldValue & 0x80));
             return;
         }
         case 5:{
@@ -2007,10 +2022,10 @@ static void cb(cpuContext *CPU){
             }
             u8 oldValue = (int8_t)registerValue >> 1;
             setRegister8(reg, oldValue);
+            cpuSetFlags(CPU, !oldValue, 0, 0, registerValue & 1);
             if(reg == RT_HL){
                 waitForCPUCycle(1);
             }
-            cpuSetFlags(CPU, !oldValue, 0, 0, registerValue & 1);
             return;
         }
         case 6:{
@@ -2019,10 +2034,10 @@ static void cb(cpuContext *CPU){
             }
             registerValue = ((registerValue & 0xF0) >> 4) | ((registerValue & 0xF) << 4);
             setRegister8(reg, registerValue);
+            cpuSetFlags(CPU, registerValue == 0, false, false, false);
             if(reg == RT_HL){
                 waitForCPUCycle(1);
             }
-            cpuSetFlags(CPU, registerValue == 0, false, false, false);
             return;
         }
         case 7:{
@@ -2031,10 +2046,10 @@ static void cb(cpuContext *CPU){
             }
             u8 oldValue = registerValue >> 1;
             setRegister8(reg, oldValue);
+            cpuSetFlags(CPU, !oldValue, 0, 0, registerValue & 1);
             if(reg == RT_HL){
                 waitForCPUCycle(1);
             }
-            cpuSetFlags(CPU, !oldValue, 0, 0, registerValue & 1);
             return;
         }
     }
@@ -2146,6 +2161,7 @@ static void jp_nc_u16(cpuContext *CPU){
 
 //0xD3
 static void crash(cpuContext *CPU){
+    printf("crashing the system\n");
     exit(-21);
 }
 
@@ -2363,8 +2379,13 @@ static void add_sp_i8(cpuContext *CPU){
     CPU->fetchedData = readBus(CPU->registers.pc);
     CPU->registers.pc++;
     waitForCPUCycle(1);
-    waitForCPUCycle(1);
     u32 value = readRegister(RT_SP) + (int8_t)CPU->fetchedData; 
+    waitForCPUCycle(1);
+    int z = 0;
+    int h = (readRegister(RT_SP) & 0xF) + (CPU->fetchedData & 0xF) >= 0x10;
+    int c = (int)(readRegister(RT_SP) & 0xFF) + (int)(CPU->fetchedData & 0xFF) >= 0x100;
+    setRegister(RT_SP, value & 0xFFFF);
+    cpuSetFlags(CPU, z, 0, h, c);
     waitForCPUCycle(1);
 }
 
@@ -2597,6 +2618,227 @@ static AccInstructionProcess instructionList[] = {
     [0x2D] = dec_l,
     [0x2E] = ld_l_u8,
     [0x2F] = cpl,
+
+    [0x30] = jr_nc_i8,
+    [0x31] = ld_sp_u16,
+    [0x32] = ld_mhld_a,
+    [0x33] = inc_sp,
+    [0x34] = inc_mhl,
+    [0x35] = dec_mhl,
+    [0x36] = ld_mhl_u8,
+    [0x37] = scf,
+    [0x38] = jr_c_i8,
+    [0x39] = add_hl_sp,
+    [0x3A] = ld_a_mhld,
+    [0x3B] = dec_sp,
+    [0x3C] = inc_a,
+    [0x3D] = dec_a,
+    [0x3E] = ld_a_u8,
+    [0x3F] = ccf,
+
+    [0x40] = ld_b_b,
+    [0x41] = ld_b_c,
+    [0x42] = ld_b_d,
+    [0x43] = ld_b_e,
+    [0x44] = ld_b_h,
+    [0x45] = ld_b_l,
+    [0x46] = ld_b_mhl,
+    [0x47] = ld_b_a,
+    [0x48] = ld_c_b,
+    [0x49] = ld_c_c,
+    [0x4A] = ld_c_d,
+    [0x4B] = ld_c_e,
+    [0x4C] = ld_c_h,
+    [0x4D] = ld_c_l,
+    [0x4E] = ld_c_mhl,
+    [0x4F] = ld_c_a,
+
+    [0x50] = ld_d_b,
+    [0x51] = ld_d_c,
+    [0x52] = ld_d_d,
+    [0x53] = ld_d_e,
+    [0x54] = ld_d_h,
+    [0x55] = ld_d_l,
+    [0x56] = ld_d_mhl,
+    [0x57] = ld_d_a,
+    [0x58] = ld_e_b,
+    [0x59] = ld_e_c,
+    [0x5A] = ld_e_d,
+    [0x5B] = ld_e_e,
+    [0x5C] = ld_e_h,
+    [0x5D] = ld_e_l,
+    [0x5E] = ld_e_mhl,
+    [0x5F] = ld_e_a,
+
+    [0x60] = ld_h_b,
+    [0x61] = ld_h_c,
+    [0x62] = ld_h_d,
+    [0x63] = ld_h_e,
+    [0x64] = ld_h_h,
+    [0x65] = ld_h_l,
+    [0x66] = ld_h_mhl,
+    [0x67] = ld_h_a,
+    [0x68] = ld_l_b,
+    [0x69] = ld_l_c,
+    [0x6A] = ld_l_d,
+    [0x6B] = ld_l_e,
+    [0x6C] = ld_l_h,
+    [0x6D] = ld_l_l,
+    [0x6E] = ld_l_mhl,
+    [0x6F] = ld_l_a,
+
+    [0x70] = ld_mhl_b,
+    [0x71] = ld_mhl_c,
+    [0x72] = ld_mhl_d,
+    [0x73] = ld_mhl_e,
+    [0x74] = ld_mhl_h,
+    [0x75] = ld_mhl_l,
+    [0x76] = halt,
+    [0x77] = ld_mhl_a,
+    [0x78] = ld_a_b,
+    [0x79] = ld_a_c,
+    [0x7A] = ld_a_d,
+    [0x7B] = ld_a_e,
+    [0x7C] = ld_a_h,
+    [0x7D] = ld_a_l,
+    [0x7E] = ld_a_mhl,
+    [0x7F] = ld_a_a,
+
+    [0x80] = add_a_b,
+    [0x81] = add_a_c,
+    [0x82] = add_a_d,
+    [0x83] = add_a_e,
+    [0x84] = add_a_h,
+    [0x85] = add_a_l,
+    [0x86] = add_a_mhl,
+    [0x87] = add_a_a,
+    [0x88] = adc_a_b,
+    [0x89] = adc_a_c,
+    [0x8A] = adc_a_d,
+    [0x8B] = adc_a_e,
+    [0x8C] = adc_a_h,
+    [0x8D] = adc_a_l,
+    [0x8E] = adc_a_mhl,
+    [0x8F] = adc_a_a,
+
+    [0x90] = sub_a_b,
+    [0x91] = sub_a_c,
+    [0x92] = sub_a_d,
+    [0x93] = sub_a_e,
+    [0x94] = sub_a_h,
+    [0x95] = sub_a_l,
+    [0x96] = sub_a_mhl,
+    [0x97] = sub_a_a,
+    [0x98] = sbc_a_b,
+    [0x99] = sbc_a_c,
+    [0x9A] = sbc_a_d,
+    [0x9B] = sbc_a_e,
+    [0x9C] = sbc_a_h,
+    [0x9D] = sbc_a_l,
+    [0x9E] = sbc_a_mhl,
+    [0x9F] = sbc_a_a,
+
+    [0xA0] = and_a_b,
+    [0xA1] = and_a_c,
+    [0xA2] = and_a_d,
+    [0xA3] = and_a_e,
+    [0xA4] = and_a_h,
+    [0xA5] = and_a_l,
+    [0xA6] = and_a_mhl,
+    [0xA7] = and_a_a,
+    [0xA8] = xor_a_b,
+    [0xA9] = xor_a_c,
+    [0xAA] = xor_a_d,
+    [0xAB] = xor_a_e,
+    [0xAC] = xor_a_h,
+    [0xAD] = xor_a_l,
+    [0xAE] = xor_a_mhl,
+    [0xAF] = xor_a_a,
+
+    [0xB0] = or_a_b,
+    [0xB1] = or_a_c,
+    [0xB2] = or_a_d,
+    [0xB3] = or_a_e,
+    [0xB4] = or_a_h,
+    [0xB5] = or_a_l,
+    [0xB6] = or_a_mhl,
+    [0xB7] = or_a_a,
+    [0xB8] = cp_a_b,
+    [0xB9] = cp_a_c,
+    [0xBA] = cp_a_d,
+    [0xBB] = cp_a_e,
+    [0xBC] = cp_a_h,
+    [0xBD] = cp_a_l,
+    [0xBE] = cp_a_mhl,
+    [0xBF] = cp_a_a,
+
+    [0xC0] = ret_nz,
+    [0xC1] = pop_bc,
+    [0xC2] = jp_nz_u16,
+    [0xC3] = jp_u16,
+    [0xC4] = call_nz_u16,
+    [0xC5] = push_bc,
+    [0xC6] = add_a_u8,
+    [0xC7] = rst_00h,
+    [0xC8] = ret_z,
+    [0xC9] = ret,
+    [0xCA] = jp_z_u16,
+    [0xCB] = cb,
+    [0xCC] = call_z_u16,
+    [0xCD] = call_u16,
+    [0xCE] = adc_a_u8,
+    [0xCF] = rst_08h,
+
+    [0xD0] = ret_nc,
+    [0xD1] = pop_de,
+    [0xD2] = jp_nc_u16,
+    [0xD3] = crash,
+    [0xD4] = call_nc_u16,
+    [0xD5] = push_de,
+    [0xD6] = sub_a_u8,
+    [0xD7] = rst_10h,
+    [0xD8] = ret_c,
+    [0xD9] = reti,
+    [0xDA] = jp_c_u16,
+    [0xDB] = crash,
+    [0xDC] = call_c_u16,
+    [0xDD] = crash,
+    [0xDE] = sbc_a_u8,
+    [0xDF] = rst_18h,
+
+    [0xE0] = ld_mffu8_a,
+    [0xE1] = pop_hl,
+    [0xE2] = ld_mffc_a,
+    [0xE3] = crash,
+    [0xE4] = crash,
+    [0xE5] = push_hl,
+    [0xE6] = and_a_u8,
+    [0xE7] = rst_20h,
+    [0xE8] = add_sp_i8,
+    [0xE9] = jp_hl,
+    [0xEA] = ld_mu16_a,
+    [0xEB] = crash,
+    [0xEC] = crash,
+    [0xED] = crash,
+    [0xEE] = xor_a_u8,
+    [0xEF] = rst_28h,
+
+    [0xF0] = ld_a_mffu8,
+    [0xF1] = pop_af,
+    [0xF2] = ld_a_mffc,
+    [0xF3] = di,
+    [0xF4] = crash,
+    [0xF5] = push_af,
+    [0xF6] = or_a_u8,
+    [0xF7] = rst_30h,
+    [0xF8] = ld_hl_sp_i8,
+    [0xF9] = ld_sp_hl,
+    [0xFA] = ld_a_mu16,
+    [0xFB] = ei,
+    [0xFC] = crash,
+    [0xFD] = crash,
+    [0xFE] = cp_a_u8,
+    [0xFF] = rst_38h,
 };
 
 
