@@ -52,12 +52,15 @@ bool stepCpu(){
     if(!CPU.halted){
         u16 pc = CPU.registers.pc;
         
-        waitOneCycle();
+
+        CPU.currentOpcode = readBus(CPU.registers.pc++);
+        CPU.currentInstruction = getInstructionFromOpcode(CPU.currentOpcode);
+        /*waitOneCycle();
         fetchInstruction();
         waitThreeCycles();
         //waitForCPUCycle(1);
 
-        fetchData();
+        fetchData();*/
 
 #if DEBUG_CPU == 1
         char flags[16];
@@ -83,8 +86,13 @@ bool stepCpu(){
         updateDebug();
         printDebug();
 #endif
-        execute();
-        
+        /*execute();*/
+        AccInstructionProcess accProcess = accInstructionGetProcessor(CPU.currentOpcode);
+        if(!accProcess){
+            printf("\tERR: UNAV PROC TYPE: 0x%02X\n", CPU.currentOpcode);
+            NO_IMPLEMENTATION
+        }
+        accProcess(&CPU);
         
     }
     else{

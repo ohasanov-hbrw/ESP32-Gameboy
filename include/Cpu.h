@@ -50,6 +50,10 @@ typedef void (*InstructionProcess) (cpuContext *);
 
 InstructionProcess instructionGetProcessor(instructionType type);
 
+typedef void (*AccInstructionProcess) (cpuContext *);
+
+AccInstructionProcess accInstructionGetProcessor(u8 opcode);
+
 #define CPU_FLAG_Z BIT(CPU->registers.f, 7)
 #define CPU_FLAG_N BIT(CPU->registers.f, 6)
 #define CPU_FLAG_H BIT(CPU->registers.f, 5)
