@@ -87,7 +87,7 @@ static void ldhProcess(cpuContext *CPU){
     waitForCPUCycle(1);
 }
 
-static bool checkCondition(cpuContext *CPU){
+bool checkCondition(cpuContext *CPU){
     bool z = CPU_FLAG_Z;
     bool c = CPU_FLAG_C;
 

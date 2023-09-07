@@ -70,3 +70,5 @@ u8 readInterruptFlags();
 void setInterruptFlags(u8);
 
 void instructionToString(cpuContext *, char *);
+
+bool checkCondition(cpuContext *);
