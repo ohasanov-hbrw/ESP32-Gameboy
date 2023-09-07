@@ -80,6 +80,7 @@ static void dec_b(cpuContext *CPU){
 static void ld_b_u8(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
     setRegister(RT_B, CPU->fetchedData);
     waitForCPUCycle(1);
 }
@@ -159,6 +160,7 @@ static void dec_c(cpuContext *CPU){
 static void ld_c_u8(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
     setRegister(RT_C, CPU->fetchedData);
     waitForCPUCycle(1);
 }
@@ -227,6 +229,7 @@ static void dec_d(cpuContext *CPU){
 static void ld_d_u8(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
     setRegister(RT_D, CPU->fetchedData);
     waitForCPUCycle(1);
 }
@@ -302,6 +305,7 @@ static void dec_e(cpuContext *CPU){
 static void ld_e_u8(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
     setRegister(RT_E, CPU->fetchedData);
     waitForCPUCycle(1);
 }
@@ -380,6 +384,7 @@ static void dec_h(cpuContext *CPU){
 static void ld_h_u8(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
     setRegister(RT_H, CPU->fetchedData);
     waitForCPUCycle(1);
 }
@@ -464,6 +469,7 @@ static void dec_l(cpuContext *CPU){
 static void ld_l_u8(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
     setRegister(RT_L, CPU->fetchedData);
     waitForCPUCycle(1);
 }
@@ -544,6 +550,7 @@ static void dec_mhl(cpuContext *CPU){
 static void ld_mhl_u8(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
     waitForCPUCycle(1);
     setRegister(RT_HL, CPU->fetchedData);
     waitForCPUCycle(1);
@@ -619,6 +626,7 @@ static void dec_a(cpuContext *CPU){
 static void ld_a_u8(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
     setRegister(RT_A, CPU->fetchedData);
     waitForCPUCycle(1);
 }
@@ -1827,9 +1835,9 @@ static void add_a_u8(cpuContext *CPU){
 //0xC7
 static void rst_00h(cpuContext *CPU){
     waitForCPUCycle(1);
-    CPU->registers.pc = 0x00;
-    waitForCPUCycle(1);
     push16ToStack(CPU->registers.pc);
+    waitForCPUCycle(1);
+    CPU->registers.pc = 0x00;
     waitForCPUCycle(1);
     waitForCPUCycle(1);
 }
@@ -2032,4 +2040,265 @@ static void cb(cpuContext *CPU){
     }
     printf("\tERR: INVALID CB: 0x%02X\n", operation);
     NO_IMPLEMENTATION
+}
+
+//0xCC
+static void call_z_u16(cpuContext *CPU){
+    waitForCPUCycle(1);
+    u16 low = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    u16 high = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    CPU->fetchedData = low | (high << 8);
+    if(CPU_FLAG_Z){
+        waitForCPUCycle(1);
+        push16ToStack(CPU->registers.pc);
+        waitForCPUCycle(1);
+        CPU->registers.pc = CPU->fetchedData;
+        waitForCPUCycle(1);
+    }   
+}
+
+//0xCD
+static void call_u16(cpuContext *CPU){
+    waitForCPUCycle(1);
+    u16 low = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    u16 high = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    CPU->fetchedData = low | (high << 8);
+    waitForCPUCycle(1);
+    push16ToStack(CPU->registers.pc);
+    waitForCPUCycle(1);
+    CPU->registers.pc = CPU->fetchedData;
+    waitForCPUCycle(1); 
+}
+
+//0xCE
+static void adc_a_u8(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    u16 u = CPU->fetchedData;
+    u16 a = readRegister(RT_A);
+    u16 c = CPU_FLAG_C;
+    setRegister(RT_A, (a + u + c) & 0xFF);
+    cpuSetFlags(CPU, readRegister(RT_A) == 0, 0, (a & 0xF) + (u & 0xF) + c > 0xF, a + u + c > 0xFF);
+}
+
+//0xCF
+static void rst_08h(cpuContext *CPU){
+    waitForCPUCycle(1);
+    push16ToStack(CPU->registers.pc);
+    waitForCPUCycle(1);
+    CPU->registers.pc = 0x08;
+    waitForCPUCycle(1);
+    waitForCPUCycle(1);
+}
+
+//0xD0
+static void ret_nc(cpuContext *CPU){
+    waitForCPUCycle(1);
+    waitForCPUCycle(1);
+    if(!CPU_FLAG_C){
+        
+        u16 low = popFromStack();
+        waitForCPUCycle(1);
+        u16 high = popFromStack();
+        waitForCPUCycle(1);
+        u16 value = (high << 8) | low;
+        CPU->registers.pc = value;
+        waitForCPUCycle(1);
+    }
+}
+
+//0xD1
+static void pop_de(cpuContext *CPU){
+    waitForCPUCycle(1);
+    u16 low = popFromStack();
+    waitForCPUCycle(1);
+    u16 high = popFromStack();
+    waitForCPUCycle(1);
+    u16 value = (high << 8) | low;
+    setRegister(RT_DE, value);
+}
+
+//0xD2
+static void jp_nc_u16(cpuContext *CPU){
+    waitForCPUCycle(1);
+    u16 low = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    u16 high = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    CPU->fetchedData = low | (high << 8);
+    if(!CPU_FLAG_C){
+        waitForCPUCycle(1);
+        CPU->registers.pc = CPU->fetchedData;
+    }
+}
+
+//0xD3
+static void crash(cpuContext *CPU){
+    exit(-21);
+}
+
+//0xD4
+static void call_nc_u16(cpuContext *CPU){
+    waitForCPUCycle(1);
+    u16 low = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    u16 high = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    CPU->fetchedData = low | (high << 8);
+    if(!CPU_FLAG_C){
+        waitForCPUCycle(1);
+        push16ToStack(CPU->registers.pc);
+        waitForCPUCycle(1);
+        CPU->registers.pc = CPU->fetchedData;
+        waitForCPUCycle(1);
+    }   
+}
+
+//0xD5
+static void push_de(cpuContext *CPU){
+    waitForCPUCycle(1);
+    u16 high = (readRegister(RT_DE) >> 8) & 0xFF;
+    waitForCPUCycle(1);
+    pushToStack(high);
+    u16 low = readRegister(RT_DE) & 0xFF;
+    waitForCPUCycle(1);
+    pushToStack(low);
+    waitForCPUCycle(1);
+}
+
+//0xD6
+static void sub_a_u8(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    u16 value = readRegister(RT_A) - CPU->fetchedData;
+    int z = value == 0;
+    int h = ((int)readRegister(RT_A) & 0xF) - ((int)CPU->fetchedData & 0xF) < 0;
+    int c = ((int)readRegister(RT_A)) - ((int)CPU->fetchedData) < 0;
+    setRegister(RT_A, value);
+    cpuSetFlags(CPU, z, 1, h, c);
+}
+
+//0xD7
+static void rst_10h(cpuContext *CPU){
+    waitForCPUCycle(1);
+    push16ToStack(CPU->registers.pc);
+    waitForCPUCycle(1);
+    CPU->registers.pc = 0x10;
+    waitForCPUCycle(1);
+    waitForCPUCycle(1);
+}
+
+//0xD8
+static void ret_c(cpuContext *CPU){
+    waitForCPUCycle(1);
+    waitForCPUCycle(1);
+    if(CPU_FLAG_C){
+        u16 low = popFromStack();
+        waitForCPUCycle(1);
+        u16 high = popFromStack();
+        waitForCPUCycle(1);
+        u16 value = (high << 8) | low;
+        CPU->registers.pc = value;
+        waitForCPUCycle(1);
+    }
+}
+
+//0xD9
+static void reti(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->interruptsEnabled = true;
+    u16 low = popFromStack();
+    waitForCPUCycle(1);
+    u16 high = popFromStack();
+    waitForCPUCycle(1);
+    u16 value = (high << 8) | low;
+    CPU->registers.pc = value;
+    waitForCPUCycle(1);
+}
+
+//0xDA
+static void jp_c_u16(cpuContext *CPU){
+    waitForCPUCycle(1);
+    u16 low = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    u16 high = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    CPU->fetchedData = low | (high << 8);
+    if(CPU_FLAG_C){
+        waitForCPUCycle(1);
+        CPU->registers.pc = CPU->fetchedData;
+    }
+}
+
+//0xDB
+
+//0xDC
+static void call_c_u16(cpuContext *CPU){
+    waitForCPUCycle(1);
+    u16 low = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    u16 high = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    CPU->fetchedData = low | (high << 8);
+    if(CPU_FLAG_C){
+        waitForCPUCycle(1);
+        push16ToStack(CPU->registers.pc);
+        waitForCPUCycle(1);
+        CPU->registers.pc = CPU->fetchedData;
+        waitForCPUCycle(1);
+    }   
+}
+
+//0xDE
+static void sbc_a_u8(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    u8 value = CPU->fetchedData + CPU_FLAG_C;
+    int z = readRegister(RT_A) - value == 0;
+    int h = ((int)readRegister(RT_A) & 0xF) - ((int)CPU->fetchedData & 0xF) - ((int)CPU_FLAG_C) < 0;
+    int c = ((int)readRegister(RT_A)) - ((int)CPU->fetchedData) - ((int)CPU_FLAG_C) < 0;
+    setRegister(RT_A, readRegister(RT_A) - value);
+    cpuSetFlags(CPU, z, 1, h, c);
+}
+
+//0xDF
+static void rst_18h(cpuContext *CPU){
+    waitForCPUCycle(1);
+    push16ToStack(CPU->registers.pc);
+    waitForCPUCycle(1);
+    CPU->registers.pc = 0x18;
+    waitForCPUCycle(1);
+    waitForCPUCycle(1);
+}
+
+//0xF0
+static void ld_ffu8_a(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    setRegister(RT_A, CPU->fetchedData | 0xFF00);
+    waitForCPUCycle(1);
 }
