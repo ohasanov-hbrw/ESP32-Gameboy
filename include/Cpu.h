@@ -35,6 +35,8 @@ typedef struct{
     bool halted;
     bool steppingMode;
 
+    bool stop;
+
     u8 interruptRegister;
     u8 interruptFlags;
 }cpuContext;
