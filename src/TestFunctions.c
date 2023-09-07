@@ -628,3 +628,464 @@ static void ccf(cpuContext *CPU){
     waitForCPUCycle(1);
     cpuSetFlags(CPU, -1, 0, 0, CPU_FLAG_C ^ 1);
 }
+
+//0x40
+static void ld_b_b(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_B);
+    setRegister(RT_B, CPU->fetchedData);
+}
+
+//0x41
+static void ld_b_c(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_C);
+    setRegister(RT_B, CPU->fetchedData);
+}
+
+//0x42
+static void ld_b_d(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_D);
+    setRegister(RT_B, CPU->fetchedData);
+}
+
+//0x43
+static void ld_b_e(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_E);
+    setRegister(RT_B, CPU->fetchedData);
+}
+
+//0x44
+static void ld_b_h(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_H);
+    setRegister(RT_B, CPU->fetchedData);
+}
+
+//0x45
+static void ld_b_l(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_L);
+    setRegister(RT_B, CPU->fetchedData);
+}
+
+//0x46
+static void ld_b_mhl(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readBus(readRegister(RT_HL));
+    waitForCPUCycle(1);
+    setRegister(RT_B, CPU->fetchedData);
+}
+
+//0x47
+static void ld_b_a(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_A);
+    setRegister(RT_B, CPU->fetchedData);
+}
+
+//0x48
+static void ld_c_b(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_B);
+    setRegister(RT_C, CPU->fetchedData);
+}
+
+//0x49
+static void ld_c_c(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_C);
+    setRegister(RT_C, CPU->fetchedData);
+}
+
+//0x4A
+static void ld_c_d(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_D);
+    setRegister(RT_C, CPU->fetchedData);
+}
+
+//0x4B
+static void ld_c_e(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_E);
+    setRegister(RT_C, CPU->fetchedData);
+}
+
+//0x4C
+static void ld_c_h(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_H);
+    setRegister(RT_C, CPU->fetchedData);
+}
+
+//0x4D
+static void ld_c_l(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_L);
+    setRegister(RT_C, CPU->fetchedData);
+}
+
+//0x4E
+static void ld_c_mhl(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readBus(readRegister(RT_HL));
+    waitForCPUCycle(1);
+    setRegister(RT_C, CPU->fetchedData);
+}
+
+//0x4F
+static void ld_c_a(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_A);
+    setRegister(RT_C, CPU->fetchedData);
+}
+
+//0x50
+static void ld_d_b(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_B);
+    setRegister(RT_D, CPU->fetchedData);
+}
+
+//0x51
+static void ld_d_c(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_C);
+    setRegister(RT_D, CPU->fetchedData);
+}
+
+//0x52
+static void ld_d_d(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_D);
+    setRegister(RT_D, CPU->fetchedData);
+}
+
+//0x53
+static void ld_d_e(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_E);
+    setRegister(RT_D, CPU->fetchedData);
+}
+
+//0x54
+static void ld_d_h(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_H);
+    setRegister(RT_D, CPU->fetchedData);
+}
+
+//0x55
+static void ld_d_l(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_L);
+    setRegister(RT_D, CPU->fetchedData);
+}
+
+//0x56
+static void ld_d_mhl(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readBus(readRegister(RT_HL));
+    waitForCPUCycle(1);
+    setRegister(RT_D, CPU->fetchedData);
+}
+
+//0x57
+static void ld_d_a(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_A);
+    setRegister(RT_D, CPU->fetchedData);
+}
+
+//0x58
+static void ld_e_b(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_B);
+    setRegister(RT_E, CPU->fetchedData);
+}
+
+//0x59
+static void ld_e_c(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_C);
+    setRegister(RT_E, CPU->fetchedData);
+}
+
+//0x5A
+static void ld_e_d(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_D);
+    setRegister(RT_E, CPU->fetchedData);
+}
+
+//0x5B
+static void ld_e_e(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_E);
+    setRegister(RT_E, CPU->fetchedData);
+}
+
+//0x5C
+static void ld_e_h(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_H);
+    setRegister(RT_E, CPU->fetchedData);
+}
+
+//0x5D
+static void ld_e_l(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_L);
+    setRegister(RT_E, CPU->fetchedData);
+}
+
+//0x5E
+static void ld_e_mhl(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readBus(readRegister(RT_HL));
+    waitForCPUCycle(1);
+    setRegister(RT_E, CPU->fetchedData);
+}
+
+//0x5F
+static void ld_e_a(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_A);
+    setRegister(RT_E, CPU->fetchedData);
+}
+
+//0x60
+static void ld_h_b(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_B);
+    setRegister(RT_H, CPU->fetchedData);
+}
+
+//0x61
+static void ld_h_c(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_C);
+    setRegister(RT_H, CPU->fetchedData);
+}
+
+//0x62
+static void ld_h_d(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_D);
+    setRegister(RT_H, CPU->fetchedData);
+}
+
+//0x63
+static void ld_h_e(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_E);
+    setRegister(RT_H, CPU->fetchedData);
+}
+
+//0x64
+static void ld_h_h(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_H);
+    setRegister(RT_H, CPU->fetchedData);
+}
+
+//0x65
+static void ld_h_l(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_L);
+    setRegister(RT_H, CPU->fetchedData);
+}
+
+//0x66
+static void ld_h_mhl(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readBus(readRegister(RT_HL));
+    waitForCPUCycle(1);
+    setRegister(RT_H, CPU->fetchedData);
+}
+
+//0x67
+static void ld_h_a(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_A);
+    setRegister(RT_H, CPU->fetchedData);
+}
+
+//0x68
+static void ld_l_b(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_B);
+    setRegister(RT_L, CPU->fetchedData);
+}
+
+//0x69
+static void ld_l_c(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_C);
+    setRegister(RT_L, CPU->fetchedData);
+}
+
+//0x6A
+static void ld_l_d(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_D);
+    setRegister(RT_L, CPU->fetchedData);
+}
+
+//0x6B
+static void ld_l_e(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_E);
+    setRegister(RT_L, CPU->fetchedData);
+}
+
+//0x6C
+static void ld_l_h(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_H);
+    setRegister(RT_L, CPU->fetchedData);
+}
+
+//0x6D
+static void ld_l_l(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_L);
+    setRegister(RT_L, CPU->fetchedData);
+}
+
+//0x6E
+static void ld_l_mhl(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readBus(readRegister(RT_HL));
+    waitForCPUCycle(1);
+    setRegister(RT_L, CPU->fetchedData);
+}
+
+//0x6F
+static void ld_l_a(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_A);
+    setRegister(RT_L, CPU->fetchedData);
+}
+
+//0x70
+static void ld_mhl_b(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_B);
+    waitForCPUCycle(1);
+    writeBus(readRegister(RT_HL), CPU->fetchedData);
+}
+
+//0x71
+static void ld_mhl_c(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_C);
+    waitForCPUCycle(1);
+    writeBus(readRegister(RT_HL), CPU->fetchedData);
+}
+
+//0x72
+static void ld_mhl_d(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_D);
+    waitForCPUCycle(1);
+    writeBus(readRegister(RT_HL), CPU->fetchedData);
+}
+
+//0x73
+static void ld_mhl_e(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_E);
+    waitForCPUCycle(1);
+    writeBus(readRegister(RT_HL), CPU->fetchedData);
+}
+
+//0x74
+static void ld_mhl_h(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_H);
+    waitForCPUCycle(1);
+    writeBus(readRegister(RT_HL), CPU->fetchedData);
+}
+
+//0x75
+static void ld_mhl_l(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_L);
+    waitForCPUCycle(1);
+    writeBus(readRegister(RT_HL), CPU->fetchedData);
+}
+
+//0x76
+static void halt(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->halted = true;
+}
+
+//0x77
+static void ld_mhl_a(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_A);
+    waitForCPUCycle(1);
+    writeBus(readRegister(RT_HL), CPU->fetchedData);
+}
+
+//0x78
+static void ld_a_b(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_B);
+    setRegister(RT_A, CPU->fetchedData);
+}
+
+//0x79
+static void ld_a_c(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_C);
+    setRegister(RT_A, CPU->fetchedData);
+}
+
+//0x7A
+static void ld_a_d(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_D);
+    setRegister(RT_A, CPU->fetchedData);
+}
+
+//0x7B
+static void ld_a_e(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_E);
+    setRegister(RT_A, CPU->fetchedData);
+}
+
+//0x7C
+static void ld_a_h(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_H);
+    setRegister(RT_A, CPU->fetchedData);
+}
+
+//0x7D
+static void ld_a_l(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_L);
+    setRegister(RT_A, CPU->fetchedData);
+}
+
+//0x7E
+static void ld_a_mhl(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readBus(readRegister(RT_HL));
+    waitForCPUCycle(1);
+    setRegister(RT_A, CPU->fetchedData);
+}
+
+//0x7F
+static void ld_a_a(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_A);
+    setRegister(RT_A, CPU->fetchedData);
+}
