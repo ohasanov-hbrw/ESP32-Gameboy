@@ -1901,12 +1901,10 @@ static void jp_z_u16(cpuContext *CPU){
 //0xCB
 static void cb(cpuContext *CPU){
     waitForCPUCycle(1);
-    CPU->fetchedData = readBus(CPU->registers.pc);
-    CPU->registers.pc++;
-    u8 operation = CPU->fetchedData;
-    registerType reg = decodeRegisterFromData(operation & 0b111);
-    u8 bit = (operation >> 3) & 0b111;
-    u8 bitOperation = (operation >> 6) & 0b11;
+    CPU->fetchedData = readBus(CPU->registers.pc++);
+    registerType reg = decodeRegisterFromData(CPU->fetchedData & 0b111);
+    u8 bit = ((CPU->fetchedData & 0xFF) >> 3) & 0b111;
+    u8 bitOperation = ((CPU->fetchedData & 0xFF) >> 6) & 0b11;
     u8 registerValue = readRegister(reg);
     waitForCPUCycle(1);
     if(reg == RT_HL){
@@ -2053,7 +2051,7 @@ static void cb(cpuContext *CPU){
             return;
         }
     }
-    printf("\tERR: INVALID CB: 0x%02X\n", operation);
+    printf("\tERR: INVALID CB: 0x%02X\n", (CPU->fetchedData & 0xFF));
     NO_IMPLEMENTATION
 }
 
