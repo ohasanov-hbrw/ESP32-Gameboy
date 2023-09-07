@@ -1876,3 +1876,160 @@ static void jp_z_u16(cpuContext *CPU){
         CPU->registers.pc = CPU->fetchedData;
     }
 }
+
+//0xCB
+static void cb(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    u8 operation = CPU->fetchedData;
+    registerType reg = decodeRegisterFromData(operation & 0b111);
+    u8 bit = (operation >> 3) & 0b111;
+    u8 bitOperation = (operation >> 6) & 0b11;
+    u8 registerValue = readRegister8(reg);
+    waitForCPUCycle(1);
+
+    switch(bitOperation){
+        case 1:
+            if(reg == RT_HL){
+                waitForCPUCycle(1);
+            }
+            cpuSetFlags(CPU, !(registerValue & (1 << bit)), 0, 1, -1);
+            return;
+        case 2:
+            if(reg == RT_HL){
+                waitForCPUCycle(1);
+            }
+            registerValue &= ~(1 << bit);
+            setRegister8(reg, registerValue);
+            if(reg == RT_HL){
+                waitForCPUCycle(1);
+            }
+            return;    
+        case 3:
+            if(reg == RT_HL){
+                waitForCPUCycle(1);
+            }
+            registerValue |= (1 << bit);
+            setRegister8(reg, registerValue);
+            if(reg == RT_HL){
+                waitForCPUCycle(1);
+            }
+            return;
+    }
+
+    bool cFlag = CPU_FLAG_C;
+
+    switch(bit){
+        case 0:{
+            if(reg == RT_HL){
+                waitForCPUCycle(1);
+            }
+            bool cSet = false;
+            u8 result = (registerValue << 1) & 0xFF;
+            if((registerValue & (1 << 7)) != 0){
+                result |= 1;
+                cSet = true;
+            }
+            setRegister8(reg, result);
+            if(reg == RT_HL){
+                waitForCPUCycle(1);
+            }
+            cpuSetFlags(CPU, result == 0, false, false, cSet);
+            return;
+        }
+        case 1:{
+            if(reg == RT_HL){
+                waitForCPUCycle(1);
+            }
+            u8 oldValue = registerValue;
+            registerValue >>= 1;
+            registerValue |= (oldValue << 7);
+            setRegister8(reg, registerValue);
+            if(reg == RT_HL){
+                waitForCPUCycle(1);
+            }
+            cpuSetFlags(CPU, !registerValue, false, false, oldValue & 1);
+            return;
+        }
+        case 2:{
+            if(reg == RT_HL){
+                waitForCPUCycle(1);
+            }
+            u8 oldValue = registerValue;
+            registerValue <<= 1;
+            registerValue |= cFlag;
+            setRegister8(reg, registerValue);
+            if(reg == RT_HL){
+                waitForCPUCycle(1);
+            }
+            cpuSetFlags(CPU, !registerValue, false, false, !!(oldValue & 0x80));
+            return;
+        }
+        case 3:{
+            if(reg == RT_HL){
+                waitForCPUCycle(1);
+            }
+            u8 oldValue = registerValue;
+            registerValue >>= 1;
+            registerValue |= (cFlag << 7);
+            setRegister8(reg, registerValue);
+            if(reg == RT_HL){
+                waitForCPUCycle(1);
+            }
+            cpuSetFlags(CPU, !registerValue, false, false, oldValue & 1);
+            return;
+        }
+        case 4:{
+            if(reg == RT_HL){
+                waitForCPUCycle(1);
+            }
+            u8 oldValue = registerValue;
+            registerValue <<= 1;
+            setRegister8(reg, registerValue);
+            if(reg == RT_HL){
+                waitForCPUCycle(1);
+            }
+            cpuSetFlags(CPU, !registerValue, false, false, !!(oldValue & 0x80));
+            return;
+        }
+        case 5:{
+            if(reg == RT_HL){
+                waitForCPUCycle(1);
+            }
+            u8 oldValue = (int8_t)registerValue >> 1;
+            setRegister8(reg, oldValue);
+            if(reg == RT_HL){
+                waitForCPUCycle(1);
+            }
+            cpuSetFlags(CPU, !oldValue, 0, 0, registerValue & 1);
+            return;
+        }
+        case 6:{
+            if(reg == RT_HL){
+                waitForCPUCycle(1);
+            }
+            registerValue = ((registerValue & 0xF0) >> 4) | ((registerValue & 0xF) << 4);
+            setRegister8(reg, registerValue);
+            if(reg == RT_HL){
+                waitForCPUCycle(1);
+            }
+            cpuSetFlags(CPU, registerValue == 0, false, false, false);
+            return;
+        }
+        case 7:{
+            if(reg == RT_HL){
+                waitForCPUCycle(1);
+            }
+            u8 oldValue = registerValue >> 1;
+            setRegister8(reg, oldValue);
+            if(reg == RT_HL){
+                waitForCPUCycle(1);
+            }
+            cpuSetFlags(CPU, !oldValue, 0, 0, registerValue & 1);
+            return;
+        }
+    }
+    printf("\tERR: INVALID CB: 0x%02X\n", operation);
+    NO_IMPLEMENTATION
+}
