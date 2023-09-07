@@ -1721,3 +1721,158 @@ static void cp_a_a(cpuContext *CPU){
     int value = (int)readRegister(RT_A) - (int)CPU->fetchedData;
     cpuSetFlags(CPU, value == 0, 1, ((int)readRegister(RT_A) & 0x0F) - ((int)CPU->fetchedData & 0x0F) < 0, value < 0);
 }
+
+//0xC0
+static void ret_nz(cpuContext *CPU){
+    waitForCPUCycle(1);
+    waitForCPUCycle(1);
+    if(!CPU_FLAG_Z){
+        
+        u16 low = popFromStack();
+        waitForCPUCycle(1);
+        u16 high = popFromStack();
+        waitForCPUCycle(1);
+        u16 value = (high << 8) | low;
+        CPU->registers.pc = value;
+        waitForCPUCycle(1);
+    }
+}
+
+//0xC1
+static void pop_bc(cpuContext *CPU){
+    waitForCPUCycle(1);
+    u16 low = popFromStack();
+    waitForCPUCycle(1);
+    u16 high = popFromStack();
+    waitForCPUCycle(1);
+    u16 value = (high << 8) | low;
+    setRegister(RT_BC, value);
+}
+
+//0xC2
+static void jp_nz_u16(cpuContext *CPU){
+    waitForCPUCycle(1);
+    u16 low = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    u16 high = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    CPU->fetchedData = low | (high << 8);
+    if(!CPU_FLAG_Z){
+        waitForCPUCycle(1);
+        CPU->registers.pc = CPU->fetchedData;
+    }
+}
+
+//0xC3
+static void jp_u16(cpuContext *CPU){
+    waitForCPUCycle(1);
+    u16 low = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    u16 high = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    CPU->fetchedData = low | (high << 8);
+    waitForCPUCycle(1);
+    CPU->registers.pc = CPU->fetchedData;
+}
+
+//0xC4
+static void call_nz_u16(cpuContext *CPU){
+    waitForCPUCycle(1);
+    u16 low = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    u16 high = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    CPU->fetchedData = low | (high << 8);
+    if(!CPU_FLAG_Z){
+        waitForCPUCycle(1);
+        push16ToStack(CPU->registers.pc);
+        waitForCPUCycle(1);
+        CPU->registers.pc = CPU->fetchedData;
+        waitForCPUCycle(1);
+    }   
+}
+
+//0xC5
+static void push_bc(cpuContext *CPU){
+    waitForCPUCycle(1);
+    u16 high = (readRegister(RT_BC) >> 8) & 0xFF;
+    waitForCPUCycle(1);
+    pushToStack(high);
+    u16 low = readRegister(RT_BC) & 0xFF;
+    waitForCPUCycle(1);
+    pushToStack(low);
+    waitForCPUCycle(1);
+}
+
+//0xC6
+static void add_a_u8(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    u32 value = readRegister(RT_A) + CPU->fetchedData;
+    int z = (value & 0xFF) == 0;
+    int h = (readRegister(RT_A) & 0xF) + (CPU->fetchedData & 0xF) >= 0x10;
+    int c = (int)(readRegister(RT_A) & 0xFF) + (int)(CPU->fetchedData & 0xFF) >= 0x100;
+    setRegister(RT_A, value & 0xFFFF);
+    cpuSetFlags(CPU, z, 0, h, c);
+}
+
+//0xC7
+static void rst_00h(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->registers.pc = 0x00;
+    waitForCPUCycle(1);
+    push16ToStack(CPU->registers.pc);
+    waitForCPUCycle(1);
+    waitForCPUCycle(1);
+}
+
+//0xC8
+static void ret_z(cpuContext *CPU){
+    waitForCPUCycle(1);
+    waitForCPUCycle(1);
+    if(CPU_FLAG_Z){
+        u16 low = popFromStack();
+        waitForCPUCycle(1);
+        u16 high = popFromStack();
+        waitForCPUCycle(1);
+        u16 value = (high << 8) | low;
+        CPU->registers.pc = value;
+        waitForCPUCycle(1);
+    }
+}
+
+//0xC9
+static void ret(cpuContext *CPU){
+    waitForCPUCycle(1);
+    u16 low = popFromStack();
+    waitForCPUCycle(1);
+    u16 high = popFromStack();
+    waitForCPUCycle(1);
+    u16 value = (high << 8) | low;
+    CPU->registers.pc = value;
+    waitForCPUCycle(1);
+}
+
+//0xCA
+static void jp_z_u16(cpuContext *CPU){
+    waitForCPUCycle(1);
+    u16 low = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    u16 high = readBus(CPU->registers.pc);
+    CPU->registers.pc++;
+    waitForCPUCycle(1);
+    CPU->fetchedData = low | (high << 8);
+    if(CPU_FLAG_Z){
+        waitForCPUCycle(1);
+        CPU->registers.pc = CPU->fetchedData;
+    }
+}
