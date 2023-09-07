@@ -187,11 +187,11 @@ bool loadCartridge(char *cart){
         else if(cartridge.header->ramSize == 0x05){
             cartridge.ramSize = 8192 * 8;
         }
-        cartridge.romData = malloc(cartridge.ramSize);
+        cartridge.ramData = malloc(cartridge.ramSize);
         memset(cartridge.romData, 0, sizeof(cartridge.romData));
         
     }
-    printf("allocated %dKiB of ram\n", cartridge.ramSize);
+    printf("allocated %dByte of ram\n", cartridge.ramSize);
 
     u16 x = 0;
     for(u16 i = 0x0134; i <= 0x014C; i++){
@@ -211,7 +211,7 @@ u8 readFromCartridge(u16 address){
         return cartridge.romData[address + cartridge.romOffset];
     }
     else if(address < 0xC000){
-
+        return cartridge.ramData[address - 0xA000];
     }
 }
 

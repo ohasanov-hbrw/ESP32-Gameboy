@@ -119,82 +119,23 @@ static void goToAddress(cpuContext *CPU, u16 address, bool pushPc){
 }
 
 static void jpProcess(cpuContext *CPU){
-    //goToAddress(CPU, CPU->fetchedData, false);
-    if(CPU->currentInstruction->reg1 == RT_HL){
-        CPU->registers.pc = CPU->fetchedData;
-        return;
-    }
-    if(CPU->currentInstruction->condition == CT_NONE){
-        waitForCPUCycle(1);
-    }
-    if(checkCondition(CPU)){
-        CPU->registers.pc = CPU->fetchedData;
-        waitForCPUCycle(2);
-    }
+    goToAddress(CPU, CPU->fetchedData, false);
 }
 
 static void jrProcess(cpuContext *CPU){
     int8_t relative = (int8_t)(CPU->fetchedData & 0xFF);
     //printf("%d\n", relative);
     u16 address = CPU->registers.pc + relative;
-    //goToAddress(CPU, address, false);
-    if(CPU->currentInstruction->condition == CT_NONE){
-        waitForCPUCycle(1);
-    }
-    if(checkCondition(CPU)){
-        CPU->registers.pc = address;
-        waitForCPUCycle(1);
-    }
+    goToAddress(CPU, address, false);
 }
 
 static void callProcess(cpuContext *CPU){
-    //goToAddress(CPU, CPU->fetchedData, true);
-    waitForCPUCycle(2);
-    if(checkCondition(CPU)){
-        waitForCPUCycle(2);
-        push16ToStack(CPU->registers.pc);
-        CPU->registers.pc = CPU->fetchedData;
-        waitForCPUCycle(1);
-    }
+    goToAddress(CPU, CPU->fetchedData, true);
 }
 
 static void rstProcess(cpuContext *CPU){
-    //goToAddress(CPU, CPU->currentInstruction->parameter, true);
-    waitForCPUCycle(2);
-    push16ToStack(CPU->registers.pc);
-    CPU->registers.pc = CPU->currentInstruction->parameter;
-    waitForCPUCycle(1);
+    goToAddress(CPU, CPU->currentInstruction->parameter, true);
 }
-
-static void retProcess(cpuContext *CPU){
-    if(CPU->currentInstruction->condition != CT_NONE){
-        waitForCPUCycle(1);
-    }
-    if(checkCondition(CPU)){
-        u16 low = popFromStack();
-        waitForCPUCycle(1);
-        u16 high = popFromStack();
-        waitForCPUCycle(1);
-        u16 value = (high << 8) | low;
-        CPU->registers.pc = value;
-        waitForCPUCycle(1);
-    }
-}
-
-
-static void retiProcess(cpuContext *CPU){
-    CPU->interruptsEnabled = true;
-    //retProcess(CPU);
-    u16 low = popFromStack();
-    waitForCPUCycle(1);
-    u16 high = popFromStack();
-    waitForCPUCycle(1);
-    u16 value = (high << 8) | low;
-    CPU->registers.pc = value;
-    waitForCPUCycle(1);
-}
-
-
 
 static void diProcess(cpuContext *CPU){
     CPU->interruptsEnabled = false;
@@ -243,7 +184,25 @@ static void pushProcess(cpuContext *CPU){
     waitForCPUCycle(1);
 }
 
+static void retProcess(cpuContext *CPU){
+    if(CPU->currentInstruction->condition != CT_NONE){
+        waitForCPUCycle(1);
+    }
+    if(checkCondition(CPU)){
+        u16 low = popFromStack();
+        waitForCPUCycle(1);
+        u16 high = popFromStack();
+        waitForCPUCycle(1);
+        u16 value = (high << 8) | low;
+        CPU->registers.pc = value;
+        waitForCPUCycle(1);
+    }
+}
 
+static void retiProcess(cpuContext *CPU){
+    CPU->interruptsEnabled = true;
+    retProcess(CPU);
+}
 
 
 
@@ -497,7 +456,7 @@ static void rraProcess(cpuContext *CPU){
 
 static void stopProcess(cpuContext *CPU){
     printf("\tERR: CPU STOP\n");
-    writeBus(0xFF04, 0);
+    
     //NO_IMPLEMENTATION
 }
 
