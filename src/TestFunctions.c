@@ -1089,3 +1089,375 @@ static void ld_a_a(cpuContext *CPU){
     CPU->fetchedData = readRegister(RT_A);
     setRegister(RT_A, CPU->fetchedData);
 }
+
+//0x80
+static void add_a_b(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_B);
+    u32 value = readRegister(RT_A) + CPU->fetchedData;
+    int z = (value & 0xFF) == 0;
+    int h = (readRegister(RT_A) & 0xF) + (CPU->fetchedData & 0xF) >= 0x10;
+    int c = (int)(readRegister(RT_A) & 0xFF) + (int)(CPU->fetchedData & 0xFF) >= 0x100;
+    setRegister(RT_A, value & 0xFFFF);
+    cpuSetFlags(CPU, z, 0, h, c);
+}
+
+//0x81
+static void add_a_c(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_C);
+    u32 value = readRegister(RT_A) + CPU->fetchedData;
+    int z = (value & 0xFF) == 0;
+    int h = (readRegister(RT_A) & 0xF) + (CPU->fetchedData & 0xF) >= 0x10;
+    int c = (int)(readRegister(RT_A) & 0xFF) + (int)(CPU->fetchedData & 0xFF) >= 0x100;
+    setRegister(RT_A, value & 0xFFFF);
+    cpuSetFlags(CPU, z, 0, h, c);
+}
+
+//0x82
+static void add_a_d(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_D);
+    u32 value = readRegister(RT_A) + CPU->fetchedData;
+    int z = (value & 0xFF) == 0;
+    int h = (readRegister(RT_A) & 0xF) + (CPU->fetchedData & 0xF) >= 0x10;
+    int c = (int)(readRegister(RT_A) & 0xFF) + (int)(CPU->fetchedData & 0xFF) >= 0x100;
+    setRegister(RT_A, value & 0xFFFF);
+    cpuSetFlags(CPU, z, 0, h, c);
+}
+
+//0x83
+static void add_a_e(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_E);
+    u32 value = readRegister(RT_A) + CPU->fetchedData;
+    int z = (value & 0xFF) == 0;
+    int h = (readRegister(RT_A) & 0xF) + (CPU->fetchedData & 0xF) >= 0x10;
+    int c = (int)(readRegister(RT_A) & 0xFF) + (int)(CPU->fetchedData & 0xFF) >= 0x100;
+    setRegister(RT_A, value & 0xFFFF);
+    cpuSetFlags(CPU, z, 0, h, c);
+}
+
+//0x84
+static void add_a_h(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_H);
+    u32 value = readRegister(RT_A) + CPU->fetchedData;
+    int z = (value & 0xFF) == 0;
+    int h = (readRegister(RT_A) & 0xF) + (CPU->fetchedData & 0xF) >= 0x10;
+    int c = (int)(readRegister(RT_A) & 0xFF) + (int)(CPU->fetchedData & 0xFF) >= 0x100;
+    setRegister(RT_A, value & 0xFFFF);
+    cpuSetFlags(CPU, z, 0, h, c);
+}
+
+//0x85
+static void add_a_l(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_L);
+    u32 value = readRegister(RT_A) + CPU->fetchedData;
+    int z = (value & 0xFF) == 0;
+    int h = (readRegister(RT_A) & 0xF) + (CPU->fetchedData & 0xF) >= 0x10;
+    int c = (int)(readRegister(RT_A) & 0xFF) + (int)(CPU->fetchedData & 0xFF) >= 0x100;
+    setRegister(RT_A, value & 0xFFFF);
+    cpuSetFlags(CPU, z, 0, h, c);
+}
+
+//0x86
+static void add_a_mhl(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readBus(readRegister(RT_HL));
+    waitForCPUCycle(1);
+    u32 value = readRegister(RT_A) + CPU->fetchedData;
+    int z = (value & 0xFF) == 0;
+    int h = (readRegister(RT_A) & 0xF) + (CPU->fetchedData & 0xF) >= 0x10;
+    int c = (int)(readRegister(RT_A) & 0xFF) + (int)(CPU->fetchedData & 0xFF) >= 0x100;
+    setRegister(RT_A, value & 0xFFFF);
+    cpuSetFlags(CPU, z, 0, h, c);
+}
+
+//0x87
+static void add_a_a(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_A);
+    u32 value = readRegister(RT_A) + CPU->fetchedData;
+    int z = (value & 0xFF) == 0;
+    int h = (readRegister(RT_A) & 0xF) + (CPU->fetchedData & 0xF) >= 0x10;
+    int c = (int)(readRegister(RT_A) & 0xFF) + (int)(CPU->fetchedData & 0xFF) >= 0x100;
+    setRegister(RT_A, value & 0xFFFF);
+    cpuSetFlags(CPU, z, 0, h, c);
+}
+
+//0x88
+static void adc_a_b(cpuContext *CPU){
+    waitForCPUCycle(1);
+    u16 u = readRegister(RT_B);
+    u16 a = readRegister(RT_A);
+    u16 c = CPU_FLAG_C;
+    setRegister(RT_A, (a + u + c) & 0xFF);
+    cpuSetFlags(CPU, readRegister(RT_A) == 0, 0, (a & 0xF) + (u & 0xF) + c > 0xF, a + u + c > 0xFF);
+}
+
+//0x89
+static void adc_a_c(cpuContext *CPU){
+    waitForCPUCycle(1);
+    u16 u = readRegister(RT_C);
+    u16 a = readRegister(RT_A);
+    u16 c = CPU_FLAG_C;
+    setRegister(RT_A, (a + u + c) & 0xFF);
+    cpuSetFlags(CPU, readRegister(RT_A) == 0, 0, (a & 0xF) + (u & 0xF) + c > 0xF, a + u + c > 0xFF);
+}
+
+//0x8A
+static void adc_a_d(cpuContext *CPU){
+    waitForCPUCycle(1);
+    u16 u = readRegister(RT_D);
+    u16 a = readRegister(RT_A);
+    u16 c = CPU_FLAG_C;
+    setRegister(RT_A, (a + u + c) & 0xFF);
+    cpuSetFlags(CPU, readRegister(RT_A) == 0, 0, (a & 0xF) + (u & 0xF) + c > 0xF, a + u + c > 0xFF);
+}
+
+//0x8B
+static void adc_a_e(cpuContext *CPU){
+    waitForCPUCycle(1);
+    u16 u = readRegister(RT_E);
+    u16 a = readRegister(RT_A);
+    u16 c = CPU_FLAG_C;
+    setRegister(RT_A, (a + u + c) & 0xFF);
+    cpuSetFlags(CPU, readRegister(RT_A) == 0, 0, (a & 0xF) + (u & 0xF) + c > 0xF, a + u + c > 0xFF);
+}
+
+//0x8C
+static void adc_a_h(cpuContext *CPU){
+    waitForCPUCycle(1);
+    u16 u = readRegister(RT_H);
+    u16 a = readRegister(RT_A);
+    u16 c = CPU_FLAG_C;
+    setRegister(RT_A, (a + u + c) & 0xFF);
+    cpuSetFlags(CPU, readRegister(RT_A) == 0, 0, (a & 0xF) + (u & 0xF) + c > 0xF, a + u + c > 0xFF);
+}
+
+//0x8D
+static void adc_a_l(cpuContext *CPU){
+    waitForCPUCycle(1);
+    u16 u = readRegister(RT_L);
+    u16 a = readRegister(RT_A);
+    u16 c = CPU_FLAG_C;
+    setRegister(RT_A, (a + u + c) & 0xFF);
+    cpuSetFlags(CPU, readRegister(RT_A) == 0, 0, (a & 0xF) + (u & 0xF) + c > 0xF, a + u + c > 0xFF);
+}
+
+//0x8E
+static void adc_a_mhl(cpuContext *CPU){
+    waitForCPUCycle(1);
+    u16 u = readBus(readRegister(RT_HL));
+    waitForCPUCycle(1);
+    u16 a = readRegister(RT_A);
+    u16 c = CPU_FLAG_C;
+    setRegister(RT_A, (a + u + c) & 0xFF);
+    cpuSetFlags(CPU, readRegister(RT_A) == 0, 0, (a & 0xF) + (u & 0xF) + c > 0xF, a + u + c > 0xFF);
+}
+
+//0x8F
+static void adc_a_a(cpuContext *CPU){
+    waitForCPUCycle(1);
+    u16 u = readRegister(RT_A);
+    u16 a = readRegister(RT_A);
+    u16 c = CPU_FLAG_C;
+    setRegister(RT_A, (a + u + c) & 0xFF);
+    cpuSetFlags(CPU, readRegister(RT_A) == 0, 0, (a & 0xF) + (u & 0xF) + c > 0xF, a + u + c > 0xFF);
+}
+
+//0x90
+static void sub_a_b(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_B);
+    u16 value = readRegister(RT_A) - CPU->fetchedData;
+    int z = value == 0;
+    int h = ((int)readRegister(RT_A) & 0xF) - ((int)CPU->fetchedData & 0xF) < 0;
+    int c = ((int)readRegister(RT_A)) - ((int)CPU->fetchedData) < 0;
+    setRegister(RT_A, value);
+    cpuSetFlags(CPU, z, 1, h, c);
+}
+
+//0x91
+static void sub_a_c(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_C);
+    u16 value = readRegister(RT_A) - CPU->fetchedData;
+    int z = value == 0;
+    int h = ((int)readRegister(RT_A) & 0xF) - ((int)CPU->fetchedData & 0xF) < 0;
+    int c = ((int)readRegister(RT_A)) - ((int)CPU->fetchedData) < 0;
+    setRegister(RT_A, value);
+    cpuSetFlags(CPU, z, 1, h, c);
+}
+
+//0x92
+static void sub_a_d(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_D);
+    u16 value = readRegister(RT_A) - CPU->fetchedData;
+    int z = value == 0;
+    int h = ((int)readRegister(RT_A) & 0xF) - ((int)CPU->fetchedData & 0xF) < 0;
+    int c = ((int)readRegister(RT_A)) - ((int)CPU->fetchedData) < 0;
+    setRegister(RT_A, value);
+    cpuSetFlags(CPU, z, 1, h, c);
+}
+
+//0x93
+static void sub_a_e(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_E);
+    u16 value = readRegister(RT_A) - CPU->fetchedData;
+    int z = value == 0;
+    int h = ((int)readRegister(RT_A) & 0xF) - ((int)CPU->fetchedData & 0xF) < 0;
+    int c = ((int)readRegister(RT_A)) - ((int)CPU->fetchedData) < 0;
+    setRegister(RT_A, value);
+    cpuSetFlags(CPU, z, 1, h, c);
+}
+
+//0x94
+static void sub_a_h(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_H);
+    u16 value = readRegister(RT_A) - CPU->fetchedData;
+    int z = value == 0;
+    int h = ((int)readRegister(RT_A) & 0xF) - ((int)CPU->fetchedData & 0xF) < 0;
+    int c = ((int)readRegister(RT_A)) - ((int)CPU->fetchedData) < 0;
+    setRegister(RT_A, value);
+    cpuSetFlags(CPU, z, 1, h, c);
+}
+
+//0x95
+static void sub_a_l(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_L);
+    u16 value = readRegister(RT_A) - CPU->fetchedData;
+    int z = value == 0;
+    int h = ((int)readRegister(RT_A) & 0xF) - ((int)CPU->fetchedData & 0xF) < 0;
+    int c = ((int)readRegister(RT_A)) - ((int)CPU->fetchedData) < 0;
+    setRegister(RT_A, value);
+    cpuSetFlags(CPU, z, 1, h, c);
+}
+
+//0x96
+static void sub_a_mhl(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readBus(readRegister(RT_HL));
+    waitForCPUCycle(1);
+    u16 value = readRegister(RT_A) - CPU->fetchedData;
+    int z = value == 0;
+    int h = ((int)readRegister(RT_A) & 0xF) - ((int)CPU->fetchedData & 0xF) < 0;
+    int c = ((int)readRegister(RT_A)) - ((int)CPU->fetchedData) < 0;
+    setRegister(RT_A, value);
+    cpuSetFlags(CPU, z, 1, h, c);
+}
+
+//0x97
+static void sub_a_a(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_A);
+    u16 value = readRegister(RT_A) - CPU->fetchedData;
+    int z = value == 0;
+    int h = ((int)readRegister(RT_A) & 0xF) - ((int)CPU->fetchedData & 0xF) < 0;
+    int c = ((int)readRegister(RT_A)) - ((int)CPU->fetchedData) < 0;
+    setRegister(RT_A, value);
+    cpuSetFlags(CPU, z, 1, h, c);
+}
+
+//0x98
+static void sbc_a_b(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_B);
+    u8 value = CPU->fetchedData + CPU_FLAG_C;
+    int z = readRegister(RT_A) - value == 0;
+    int h = ((int)readRegister(RT_A) & 0xF) - ((int)CPU->fetchedData & 0xF) - ((int)CPU_FLAG_C) < 0;
+    int c = ((int)readRegister(RT_A)) - ((int)CPU->fetchedData) - ((int)CPU_FLAG_C) < 0;
+    setRegister(RT_A, readRegister(RT_A) - value);
+    cpuSetFlags(CPU, z, 1, h, c);
+}
+
+//0x99
+static void sbc_a_c(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_C);
+    u8 value = CPU->fetchedData + CPU_FLAG_C;
+    int z = readRegister(RT_A) - value == 0;
+    int h = ((int)readRegister(RT_A) & 0xF) - ((int)CPU->fetchedData & 0xF) - ((int)CPU_FLAG_C) < 0;
+    int c = ((int)readRegister(RT_A)) - ((int)CPU->fetchedData) - ((int)CPU_FLAG_C) < 0;
+    setRegister(RT_A, readRegister(RT_A) - value);
+    cpuSetFlags(CPU, z, 1, h, c);
+}
+
+//0x9A
+static void sbc_a_d(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_D);
+    u8 value = CPU->fetchedData + CPU_FLAG_C;
+    int z = readRegister(RT_A) - value == 0;
+    int h = ((int)readRegister(RT_A) & 0xF) - ((int)CPU->fetchedData & 0xF) - ((int)CPU_FLAG_C) < 0;
+    int c = ((int)readRegister(RT_A)) - ((int)CPU->fetchedData) - ((int)CPU_FLAG_C) < 0;
+    setRegister(RT_A, readRegister(RT_A) - value);
+    cpuSetFlags(CPU, z, 1, h, c);
+}
+
+//0x9B
+static void sbc_a_e(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_E);
+    u8 value = CPU->fetchedData + CPU_FLAG_C;
+    int z = readRegister(RT_A) - value == 0;
+    int h = ((int)readRegister(RT_A) & 0xF) - ((int)CPU->fetchedData & 0xF) - ((int)CPU_FLAG_C) < 0;
+    int c = ((int)readRegister(RT_A)) - ((int)CPU->fetchedData) - ((int)CPU_FLAG_C) < 0;
+    setRegister(RT_A, readRegister(RT_A) - value);
+    cpuSetFlags(CPU, z, 1, h, c);
+}
+
+//0x9C
+static void sbc_a_h(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_H);
+    u8 value = CPU->fetchedData + CPU_FLAG_C;
+    int z = readRegister(RT_A) - value == 0;
+    int h = ((int)readRegister(RT_A) & 0xF) - ((int)CPU->fetchedData & 0xF) - ((int)CPU_FLAG_C) < 0;
+    int c = ((int)readRegister(RT_A)) - ((int)CPU->fetchedData) - ((int)CPU_FLAG_C) < 0;
+    setRegister(RT_A, readRegister(RT_A) - value);
+    cpuSetFlags(CPU, z, 1, h, c);
+}
+
+//0x9D
+static void sbc_a_l(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_L);
+    u8 value = CPU->fetchedData + CPU_FLAG_C;
+    int z = readRegister(RT_A) - value == 0;
+    int h = ((int)readRegister(RT_A) & 0xF) - ((int)CPU->fetchedData & 0xF) - ((int)CPU_FLAG_C) < 0;
+    int c = ((int)readRegister(RT_A)) - ((int)CPU->fetchedData) - ((int)CPU_FLAG_C) < 0;
+    setRegister(RT_A, readRegister(RT_A) - value);
+    cpuSetFlags(CPU, z, 1, h, c);
+}
+
+//0x9E
+static void sbc_a_mhl(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readBus(readRegister(RT_HL));
+    waitForCPUCycle(1);
+    u8 value = CPU->fetchedData + CPU_FLAG_C;
+    int z = readRegister(RT_A) - value == 0;
+    int h = ((int)readRegister(RT_A) & 0xF) - ((int)CPU->fetchedData & 0xF) - ((int)CPU_FLAG_C) < 0;
+    int c = ((int)readRegister(RT_A)) - ((int)CPU->fetchedData) - ((int)CPU_FLAG_C) < 0;
+    setRegister(RT_A, readRegister(RT_A) - value);
+    cpuSetFlags(CPU, z, 1, h, c);
+}
+
+//0x9F
+static void sbc_a_a(cpuContext *CPU){
+    waitForCPUCycle(1);
+    CPU->fetchedData = readRegister(RT_A);
+    u8 value = CPU->fetchedData + CPU_FLAG_C;
+    int z = readRegister(RT_A) - value == 0;
+    int h = ((int)readRegister(RT_A) & 0xF) - ((int)CPU->fetchedData & 0xF) - ((int)CPU_FLAG_C) < 0;
+    int c = ((int)readRegister(RT_A)) - ((int)CPU->fetchedData) - ((int)CPU_FLAG_C) < 0;
+    setRegister(RT_A, readRegister(RT_A) - value);
+    cpuSetFlags(CPU, z, 1, h, c);
+}
