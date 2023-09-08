@@ -62,7 +62,7 @@ void loadLineSprites(int i){
     }
 }
 
-static u32 target_frame_time = 1000 / 200;
+static u32 target_frame_time = 1000 / 60;
 static long prev_frame_time = 0;
 static long start_timer = 0;
 static long frame_count = 0;
@@ -139,11 +139,12 @@ void vblankMode(){
 void hblankMode(){
     if (getPpuContext()->tCycles >= TICKS_PER_LINE) {
         incrementLy();
+        //delay(0);
         getPpuContext()->wasInWindow = false;
         if (getLcdContext()->lY >= YRES) {
             LCDS_MODE_SET(MODE_VBLANK);
             requestInterrupt(IT_VBLANK);
-            if (LCDS_STAT_INT(SS_VBLANK)) {
+            if(LCDS_STAT_INT(SS_VBLANK)) {
                 requestInterrupt(IT_LCD_STAT);
             }
             getPpuContext()->currentFrame++;

@@ -3,8 +3,13 @@
 #include <Cpu.h>
 
 void handle(cpuContext * CPU, u16 address){
+    waitForCPUCycle(1);
+    waitForCPUCycle(1);
     push16ToStack(CPU->registers.pc);
+    waitForCPUCycle(1);
+    waitForCPUCycle(1);
     CPU->registers.pc = address;
+    waitForCPUCycle(1);
 }
 
 bool interruptCheck(cpuContext * CPU, u16 address, interruptType t){
@@ -24,10 +29,10 @@ bool interruptCheck(cpuContext * CPU, u16 address, interruptType t){
         else if(t == IT_JOYPAD){
             printf("JOYPAD interrupt\n");
         }*/
-        handle(CPU, address);
         CPU->interruptFlags &= ~t;
         CPU->halted = false;
         CPU->interruptsEnabled = false;
+        handle(CPU, address);
         return true;
     }
     return false;

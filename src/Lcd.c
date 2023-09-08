@@ -4,7 +4,7 @@
 
 static lcdContext LCD = {0};
 
-static unsigned long defaultColors[4] = {0xFF9BBC0F, 0xFF8BAC0F, 0xFF306230, 0xFF0F380F}; 
+static unsigned long defaultColors[4] = {0xFFFFFFFF, 0xFF999999, 0xFF555555, 0xFF111111}; //{0xFFFBBC0F, 0xFF9BAC0F, 0xFF306230, 0xFF09380F}; 
 
 lcdContext *getLcdContext(){
     return &LCD;
@@ -59,6 +59,8 @@ void updatePalette(u8 pdata, u8 pal) {
             colors = LCD.spc2;
             break;
     }
+    
+
     colors[0] = defaultColors[pdata & 0b11];
     colors[1] = defaultColors[(pdata >> 2) & 0b11];
     colors[2] = defaultColors[(pdata >> 4) & 0b11];
