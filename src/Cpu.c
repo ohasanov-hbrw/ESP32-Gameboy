@@ -23,6 +23,7 @@ void initCpu(){
     *((short *)&CPU.registers.b) = 0x1300;
     *((short *)&CPU.registers.d) = 0xD800;
     *((short *)&CPU.registers.h) = 0x4D01;
+    CPU.registers.a = 0x01;
     CPU.interruptRegister = 0;
     CPU.interruptFlags = 0;
     CPU.interruptsEnabled = false;
@@ -82,6 +83,12 @@ bool stepCpu(){
         printDebug();
 #endif
         /*execute();*/
+        //exit(0);
+        if(CPU.currentOpcode == 0xFF){
+            printf("wtf\n");
+            exit(0);
+
+        }
         AccInstructionProcess accProcess = accInstructionGetProcessor(CPU.currentOpcode);
         if(!accProcess){
             printf("\tERR: UNAV PROC TYPE: 0x%02X\n", CPU.currentOpcode);
