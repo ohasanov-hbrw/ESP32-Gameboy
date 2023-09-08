@@ -29,6 +29,7 @@ EmulatorContext *GetEmulatorContext(){
 void *runCpu(void * p){
     initCpu();
     initPpu();
+    initAudio();
     initTimer();
     
     emulator.running = true;

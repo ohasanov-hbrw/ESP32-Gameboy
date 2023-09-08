@@ -3,7 +3,7 @@
 
 
 bool windowVisible(){
-    return LCDC_WIN_ENABLE && getLcdContext()->winX >= 0 && getLcdContext()->winX <= 166;
+    return LCDC_WIN_ENABLE && getPpuContext()->windowLatch && getPpuContext()->windowLatchX;
 }
 
 
@@ -35,47 +35,7 @@ u32 pixelFifoBackgroundPop(){
 }
 
 u32 fetchSpritePixels(int bit, u32 color, u8 bgColor){
-    for (int i = 0; i < getPpuContext()->fetchedEntryCount; i++) {
-        int sp_x = (getPpuContext()->fetchedEntries[i].x - 8) + ((getLcdContext()->scrollX % 8));
-        
-        if (sp_x + 8 < getPpuContext()->pfc.fifoX) {
-            //past pixel point already...
-            continue;
-        }
 
-        int offset = getPpuContext()->pfc.fifoX - sp_x;
-
-        if (offset < 0 || offset > 7) {
-            //out of bounds..
-            continue;
-        }
-
-        bit = (7 - offset);
-
-        if (BIT(getPpuContext()->fetchedEntries[i].flags, 5)) {
-            bit = offset;
-        }
-
-        u8 hi = !!(getPpuContext()->pfc.entryFetchData[i * 2] & (1 << bit));
-        u8 lo = !!(getPpuContext()->pfc.entryFetchData[(i * 2) + 1] & (1 << bit)) << 1;
-
-        bool bg_priority = BIT(getPpuContext()->fetchedEntries[i].flags, 7);
-
-        if (!(hi|lo)) {
-            //transparent
-            continue;
-        }
-
-        if (!bg_priority || bgColor == 0) {
-            color = (BIT(getPpuContext()->fetchedEntries[i].flags, 4)) ? getLcdContext()->spc2[hi|lo] : getLcdContext()->spc1[hi|lo];
-
-            if (hi|lo) {
-                break;
-            }
-        }
-    }
-
-    return color;
 }
 
 bool fifoAdd(){
@@ -105,78 +65,21 @@ bool fifoAdd(){
 }
 
 void loadSpriteTile(){
-    oamLineEntry *le = getPpuContext()->lineSprites;
-    while(le){
-        int sp_x = (le->entry.x - 8) + (getLcdContext()->scrollX % 8);
-        if((sp_x >= getPpuContext()->pfc.fetchedX && sp_x < getPpuContext()->pfc.fetchedX + 8) || ((sp_x + 8) >= getPpuContext()->pfc.fetchedX && (sp_x + 8) < getPpuContext()->pfc.fetchedX + 8)) {
-            getPpuContext()->fetchedEntries[getPpuContext()->fetchedEntryCount++] = le->entry;
-        }
-        le = le->next;
-        if(!le || getPpuContext()->fetchedEntryCount >= 3){
-            break;
-        }
-    }
+
 }
 
 void loadSpriteData(u8 offset){
-    int cur_y = getLcdContext()->lY;
-    u8 sprite_height = LCDC_OBJ_HEIGHT;
 
-    for (int i = 0; i < getPpuContext()->fetchedEntryCount; i++) {
-        u8 ty = ((cur_y + 16) - getPpuContext()->fetchedEntries[i].y) * 2;
-
-        if (BIT(getPpuContext()->fetchedEntries[i].flags, 6)) {
-            //flipped upside down...
-            ty = ((sprite_height * 2) - 2) - ty;
-        }
-
-        u8 tile_index = getPpuContext()->fetchedEntries[i].tile;
-
-        if (sprite_height == 16) {
-            tile_index &= ~(1); //remove last bit...
-        }
-
-        getPpuContext()->pfc.entryFetchData[(i * 2) + offset] = 
-            readBus(0x8000 + (tile_index * 16) + ty + offset);
-    }
 }
 
 void loadWindowTile(){
-    if (!windowVisible()) {
-        return;
-    }
-    
-    u8 window_y = getLcdContext()->winY;
 
-    if (getPpuContext()->pfc.fetchedX + 7 >= getLcdContext()->winX && getPpuContext()->pfc.fetchedX + 7 < getLcdContext()->winX + 256) {
-        if (getPpuContext()->windowLatch) {
-            u8 w_tile_y = getPpuContext()->windowLine / 8;
-            getPpuContext()->pfc.bgwFetchData[0] = readBus(LCDC_WIN_MAP_AREA + 
-                ((getPpuContext()->pfc.fetchedX + 7 - getLcdContext()->winX) / 8) +
-                (w_tile_y * 32));
-
-            if (LCDC_BGW_DATA_AREA == 0x8800) {
-                getPpuContext()->pfc.bgwFetchData[0] += 128;
-            }
-        }
-    }
 }
 
 
 
 bool pipelinePush(){
-    if (getPpuContext()->pfc.pixelFifoBackground.size > 8) {
-        u32 pixel_data = pixelFifoBackgroundPop();
 
-        if (getPpuContext()->pfc.lineX >= (getLcdContext()->scrollX % 8)) {
-            getPpuContext()->vBuffer[getPpuContext()->pfc.pushedX + 
-                (getLcdContext()->lY * XRES)] = pixel_data;
-
-            getPpuContext()->pfc.pushedX++;
-        }
-
-        getPpuContext()->pfc.lineX++;
-    }
 }
 
 void pipelineFetch(){
@@ -184,25 +87,7 @@ void pipelineFetch(){
         case FS_TILE:{
             //printf("op %d at lY %d\n", getPpuContext()->numberOfOp, getLcdContext()->lY);
             if(getPpuContext()->numberOfOp == 0){
-               getPpuContext()->fetchedEntryCount = 0;
-                if (LCDC_BGW_ENABLE) {
-                    getPpuContext()->pfc.bgwFetchData[0] = readBus(LCDC_BG_MAP_AREA + 
-                        (getPpuContext()->pfc.mapX / 8) + 
-                        (((getPpuContext()->pfc.mapY / 8)) * 32));
-                
-                    if (LCDC_BGW_DATA_AREA == 0x8800) {
-                        getPpuContext()->pfc.bgwFetchData[0] += 128;
-                    }
 
-                    loadWindowTile();
-                }
-
-                if (LCDC_OBJ_ENABLE && getPpuContext()->lineSprites) {
-                    loadSpriteTile();
-                }
-                getPpuContext()->pfc.fetchedX += 8;
-                //printf("fetching from 0x%04X\n", LCDC_BGW_DATA_AREA +(getPpuContext()->pfc.bgwFetchData[0] * 16) + getPpuContext()->pfc.tileY);
-                //printf("fetchedX %d at lY %d\n", getPpuContext()->pfc.fetchedX, getLcdContext()->lY);
             }
             if(getPpuContext()->numberOfOp > 0){
                 getPpuContext()->pfc.currentFetchState = FS_DATA0;
@@ -214,11 +99,7 @@ void pipelineFetch(){
         }
         case FS_DATA0:{
             if(getPpuContext()->numberOfOp == 0){
-                getPpuContext()->pfc.bgwFetchData[1] = readBus(LCDC_BGW_DATA_AREA +
-                    (getPpuContext()->pfc.bgwFetchData[0] * 16) + 
-                    getPpuContext()->pfc.tileY);
 
-                loadSpriteData(0);
 
             }
             if(getPpuContext()->numberOfOp > 0){
@@ -231,12 +112,7 @@ void pipelineFetch(){
         } 
         case FS_DATA1:{
             if(getPpuContext()->numberOfOp == 0){
-                getPpuContext()->pfc.bgwFetchData[2] = readBus(LCDC_BGW_DATA_AREA +
-                    (getPpuContext()->pfc.bgwFetchData[0] * 16) + 
-                    getPpuContext()->pfc.tileY + 1);
 
-                loadSpriteData(1);
-                
                 //printf("fsdata1 %d %d   %d  map %d %d   tiley %d\n", getPpuContext()->pfc.bgwFetchData[1], getPpuContext()->pfc.bgwFetchData[2], getPpuContext()->pfc.fetchedX, getPpuContext()->pfc.mapX, getPpuContext()->pfc.mapY, getPpuContext()->pfc.tileY);
             }
             if(getPpuContext()->numberOfOp > 0){
@@ -262,7 +138,7 @@ void pipelineFetch(){
 
         case FS_PUSH:{
             if(getPpuContext()->numberOfOp % 2 == 0){
-                if(fifoAdd()){
+                if(true){
                     getPpuContext()->pfc.currentFetchState = FS_TILE;
                     getPpuContext()->numberOfOp = 0;
                     //printf("pushed\n");
@@ -351,12 +227,11 @@ void fakePush(){
 
     int x = getPpuContext()->pushedFakePixels;
     int y = getLcdContext()->lY;
-
     int windowY = getLcdContext()->winY;
     int windowX = getLcdContext()->winX - 7;
 
 
-    if(x >= windowX && x < windowX + 256 && getPpuContext()->windowLatch && LCDC_WIN_ENABLE){
+    if(/*x >= windowX && x < windowX + 256*/ getPpuContext()->windowLatchX && getPpuContext()->windowLatch && LCDC_WIN_ENABLE){
         int mapX = (x - windowX) % 256;
         int mapY = getPpuContext()->windowLine % 256;
         //printf("mapY = %d\n", mapY);
@@ -377,7 +252,7 @@ void fakePush(){
             int bit = 7 - (mapX % 8);
             u8 high = !!(getPpuContext()->pfc.bgwFetchData[1] & (1 << bit));
             u8 low = !!(getPpuContext()->pfc.bgwFetchData[2] & (1 << bit)) << 1;
-            pixelDataBg = getLcdContext()->bgc[high | low]/* & 0xFFFF00FF*/; //getLcdContext()->bgc[high | low] | 123 
+            pixelDataBg = getLcdContext()->bgc[high | low]  | 0xFF0000FF/* & 0xFFFF00FF*/; //getLcdContext()->bgc[high | low] | 123 
             //printf("stuff on window on line %d \n", y);
         }
         else{
@@ -386,15 +261,15 @@ void fakePush(){
         getPpuContext()->wasInWindow = true;
     }
     else{
-        int mapX = (x + getLcdContext()->scrollX) % 256;
-        int mapY = (y + getLcdContext()->scrollY) % 256;
+        int mapX = x + getLcdContext()->scrollX;
+        int mapY = y + getLcdContext()->scrollY;
 
         u16 address = 0x9800;
         if(BIT(getLcdContext()->lcdC, 3)){
             address = 0x9C00;
         }
         if(LCDC_BGW_ENABLE){
-            getPpuContext()->pfc.bgwFetchData[0] = readBus(LCDC_BG_MAP_AREA + (mapX / 8) + (((mapY / 8)) * 32));
+            getPpuContext()->pfc.bgwFetchData[0] = readBus(address + (mapX / 8) % 32 + ((((mapY / 8)) % 32) * 32));
             if(LCDC_BGW_DATA_AREA == 0x8800) {
                 getPpuContext()->pfc.bgwFetchData[0] += 128;
             }
@@ -443,7 +318,7 @@ void fakePush(){
 
     if(LCDC_OBJ_ENABLE){
         for(int i = 0; i < getPpuContext()->fetchedEntryCount; i++){
-            int spriteX = (getPpuContext()->fetchedEntries[i].x - 8) + ((getLcdContext()->scrollX % 8));
+            int spriteX = (getPpuContext()->fetchedEntries[i].x - 8); //+ ((getLcdContext()->scrollX % 8))
             if (spriteX + 8 < getPpuContext()->pushedFakePixels) {
                 continue;
             }
@@ -465,7 +340,7 @@ void fakePush(){
             }
 
             if (!bgp || pixelDataBg == getLcdContext()->bgc[0]) {
-                pixelDataBg = (BIT(getPpuContext()->fetchedEntries[i].flags, 4)) ? getLcdContext()->spc2[high | low] : getLcdContext()->spc1[high | low];
+                pixelDataBg = (BIT(getPpuContext()->fetchedEntries[i].flags, 4)) ? getLcdContext()->spc2[high | low] : getLcdContext()->spc1[high | low] | 0xFFFF0000;
                 if(high | low){
                     break;
                 }
@@ -481,6 +356,18 @@ void fakePush(){
 
 void processPipeline(){
 
+    int x = getPpuContext()->pfc.pushedX;
+
+    
+
+    int y = getLcdContext()->lY;
+    x = getPpuContext()->pushedFakePixels;
+    if(x + 7 == getLcdContext()->winX){
+        getPpuContext()->windowLatchX = true;
+    }
+
+    
+
     getPpuContext()->pfc.mapY = (getLcdContext()->lY + getLcdContext()->scrollY);
     getPpuContext()->pfc.mapX = (getPpuContext()->pfc.fetchedX + getLcdContext()->scrollX);
     getPpuContext()->pfc.tileY = ((getLcdContext()->lY + getLcdContext()->scrollY) % 8) * 2;
@@ -489,17 +376,15 @@ void processPipeline(){
     pipelinePush();*/
 
     
-    int x = getPpuContext()->pushedFakePixels;
-    int y = getLcdContext()->lY;
-
+   
     int windowY = getLcdContext()->winY;
     int windowX = getLcdContext()->winX - 7;
-    if(getPpuContext()->inWindow == false && x >= windowX && x < windowX + 256 && y > windowY && y <= windowY + 256 && LCDC_WIN_ENABLE){
+    if(getPpuContext()->inWindow == false && getPpuContext()->windowLatchX && LCDC_WIN_ENABLE){
         getPpuContext()->pfc.currentFetchState = FS_TILE;
         getPpuContext()->fetchedFakePixels = 0;
         getPpuContext()->inWindow = true;
     }
-    if(getPpuContext()->inWindow == true && !(x >= windowX && x < windowX + 256 && y > windowY && y <= windowY + 256 && LCDC_WIN_ENABLE)){
+    if(getPpuContext()->inWindow == true && !(getPpuContext()->windowLatchX && LCDC_WIN_ENABLE)){
         getPpuContext()->pfc.currentFetchState = FS_TILE;
         getPpuContext()->fetchedFakePixels = 0;
         getPpuContext()->inWindow = false;

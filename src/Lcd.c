@@ -30,6 +30,19 @@ void initLcd(){
 
 
 u8 readLcd(u16 address){
+    if(address == 0xFF4B){
+        return LCD.winX;
+    }
+    else if(address == 0xFF4A){
+        return LCD.winY;
+    }
+    else if(address == 0xFF42){
+        return LCD.scrollY;
+    }
+    else if(address == 0xFF43){
+        return LCD.scrollX;
+    }
+
     u8 offset = (address - 0xFF40);
     u8 *p = (u8 *)&LCD;
     //printf("reading from lcd\n");
@@ -60,6 +73,15 @@ void writeLcd(u16 address, u8 value){
     }
     else if(address == 0xFF4A){
         LCD.winY = value /*% 144*/;
+        return;
+    }
+    else if(address == 0xFF42){
+        LCD.scrollY = value /*% 144*/;
+        //printf("wrote to scrolly %d\n", value);
+        return;
+    }
+    else if(address == 0xFF43){
+        LCD.scrollX = value /*% 144*/;
         return;
     }
     u8 offset = (address - 0xFF40);

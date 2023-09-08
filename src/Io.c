@@ -4,6 +4,11 @@
 #include <Dma.h>
 #include <Lcd.h>
 #include <Gamepad.h>
+
+
+#include <Audio.h>
+
+
 static char serialData[2];
 
 
@@ -33,7 +38,7 @@ u8 readIo(u16 address){
     }
 
     if(BETWEEN(address, 0xFF10, 0xFF3F)){
-        return 0;
+        return readAudio(address);
     }
 
     if (address == 0xFF0F) {
@@ -66,7 +71,7 @@ void writeIo(u16 address, u8 value){
     }
 
     if(BETWEEN(address, 0xFF10, 0xFF3F)){
-        return;
+        return writeAudio(address, value);
     }
 
     if(BETWEEN(address, 0xFF40, 0xFF4B)){

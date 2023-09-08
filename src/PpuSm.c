@@ -62,7 +62,7 @@ void loadLineSprites(int i){
     }
 }
 
-static u32 target_frame_time = 1000 / 120;
+static u32 target_frame_time = 1000 / 60;
 static long prev_frame_time = 0;
 static long start_timer = 0;
 static long frame_count = 0;
@@ -72,10 +72,11 @@ void oamMode(){
         LCDS_MODE_SET(MODE_VBLANK);
         return;
     }
-    //printf("y %d    wy %d\n", getLcdContext()->lY, getLcdContext()->winY);
+    
     if(getLcdContext()->lY == getLcdContext()->winY && LCDC_WIN_ENABLE){
         getPpuContext()->windowLatch = true;
         //printf("enable window at y %d\n", getLcdContext()->lY);
+        //printf("y %d    wy %d  wx %d \n", getLcdContext()->lY, getLcdContext()->winY, getLcdContext()->winX);
     }
     if(getPpuContext()->tCycles > 80){
         LCDS_MODE_SET(MODE_XFER);
@@ -88,6 +89,8 @@ void oamMode(){
         getPpuContext()->pushedFakePixels = 0;
         getPpuContext()->inWindow = false;
         getPpuContext()->wasInWindow = false;
+        getPpuContext()->windowLatchX = false;
+        getPpuContext()->advance = true;
         return;
     }
     if(getPpuContext()->tCycles == 0){

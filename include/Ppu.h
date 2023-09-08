@@ -91,8 +91,10 @@ typedef struct{
     int pushedFakePixels;
     bool inWindow;
     bool windowLatch;
-
+    bool windowLatchX;
     bool wasInWindow;
+
+    bool advance;
 }ppuContext;
 
 
