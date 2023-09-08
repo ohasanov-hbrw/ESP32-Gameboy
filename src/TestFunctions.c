@@ -330,9 +330,9 @@ static void jr_nz_i8(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->fetchedData = readBus(CPU->registers.pc);
     CPU->registers.pc++;
+    waitForCPUCycle(1);
     int8_t relative = (int8_t)(CPU->fetchedData & 0xFF);
     u16 address = CPU->registers.pc + relative;
-    waitForCPUCycle(1);
     if(!CPU_FLAG_Z){
         CPU->registers.pc = address;
         waitForCPUCycle(1);
@@ -2077,10 +2077,10 @@ static void call_z_u16(cpuContext *CPU){
 //0xCD
 static void call_u16(cpuContext *CPU){
     waitForCPUCycle(1);
-    u16 low = readBus(CPU->registers.pc);
+    u8 low = readBus(CPU->registers.pc);
     CPU->registers.pc++;
     waitForCPUCycle(1);
-    u16 high = readBus(CPU->registers.pc);
+    u8 high = readBus(CPU->registers.pc);
     CPU->registers.pc++;
     waitForCPUCycle(1);
     CPU->fetchedData = low | (high << 8);
@@ -2538,7 +2538,7 @@ static void ld_a_mu16(cpuContext *CPU){
 //0xFB
 static void ei(cpuContext *CPU){
     waitForCPUCycle(1);
-    CPU->interruptsEnabled = true;
+    CPU->enablingInterrupts = true;
 }
 
 //0xFC

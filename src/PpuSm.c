@@ -14,7 +14,6 @@ void incrementLy(){
     }
 
     if(getLcdContext()->lY == getLcdContext()->lYCompare){
-        //printf("requested interrupt at line %d\n", getLcdContext()->lY);
         LCDS_LYC_SET(1);
         if(LCDS_STAT_INT(SS_LYC)){
             requestInterrupt(IT_LCD_STAT);

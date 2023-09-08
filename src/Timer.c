@@ -37,7 +37,7 @@ void stepTimer(){
     }
     else if(TIMER.reload == 0){
         TIMER.tima = TIMER.tma;
-        TIMER.reload;
+        TIMER.reload = -1;
         requestInterrupt(IT_TIMER);
     }
     if(updateTimer && TIMER.tac & (1 << 2)){
