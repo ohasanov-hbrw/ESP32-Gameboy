@@ -12,7 +12,12 @@ typedef enum{
     FS_DATA0,
     FS_DATA1,
     FS_IDLE,
-    FS_PUSH
+    FS_PUSH,
+    S_TILE,
+    S_DATA0,
+    S_DATA1,
+    S_IDLE,
+    S_PUSH
 }fetchState;
 
 typedef struct _fifoEntry{
@@ -82,7 +87,7 @@ typedef struct{
     u8 windowLine;
 
     int tCycles;
-    u8 numberOfOp;
+    int numberOfOp;
 
 
     u8 currentIndexOfSprite;
@@ -93,7 +98,7 @@ typedef struct{
     bool windowLatch;
     bool windowLatchX;
     bool wasInWindow;
-
+    bool spriteFetchInProgress;
     bool advance;
 }ppuContext;
 

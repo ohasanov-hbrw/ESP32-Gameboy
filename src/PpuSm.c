@@ -14,6 +14,7 @@ void incrementLy(){
     }
 
     if(getLcdContext()->lY == getLcdContext()->lYCompare){
+        //printf("requested interrupt at line %d\n", getLcdContext()->lY);
         LCDS_LYC_SET(1);
         if(LCDS_STAT_INT(SS_LYC)){
             requestInterrupt(IT_LCD_STAT);
@@ -61,7 +62,7 @@ void loadLineSprites(int i){
     }
 }
 
-static u32 target_frame_time = 1000 / 60;
+static u32 target_frame_time = 1000 / 200;
 static long prev_frame_time = 0;
 static long start_timer = 0;
 static long frame_count = 0;
@@ -79,6 +80,7 @@ void oamMode(){
     }
     if(getPpuContext()->tCycles > 80){
         LCDS_MODE_SET(MODE_XFER);
+        pipelineFifoBackgroundReset();
         getPpuContext()->pfc.currentFetchState = FS_TILE;
         getPpuContext()->pfc.lineX = 0;
         getPpuContext()->pfc.fetchedX = 0;
@@ -90,6 +92,7 @@ void oamMode(){
         getPpuContext()->wasInWindow = false;
         getPpuContext()->windowLatchX = false;
         getPpuContext()->advance = true;
+        getPpuContext()->spriteFetchInProgress = false;
         return;
     }
     if(getPpuContext()->tCycles == 0){
