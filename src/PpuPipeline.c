@@ -303,15 +303,12 @@ void fakePush(){
         }
         if(LCDC_BGW_ENABLE){
             getPpuContext()->pfc.bgwFetchData[0] = readBus(address + (mapX / 8) + (((mapY / 8)) * 32));
+            if(LCDC_BGW_DATA_AREA == 0x8800) {
+                getPpuContext()->pfc.bgwFetchData[0] += 128;
+            }
             
-            if(BIT(getLcdContext()->lcdC, 4)) {
-                getPpuContext()->pfc.bgwFetchData[1] = readBus(0x8000 + (getPpuContext()->pfc.bgwFetchData[0] * 16) + (mapY % 8) * 2);
-                getPpuContext()->pfc.bgwFetchData[2] = readBus(0x8000 + (getPpuContext()->pfc.bgwFetchData[0] * 16) + (mapY % 8) * 2 + 1);
-            }
-            else{
-                getPpuContext()->pfc.bgwFetchData[1] = readBus(0x9000 + ((int8_t)getPpuContext()->pfc.bgwFetchData[0] * 16) + (mapY % 8) * 2);
-                getPpuContext()->pfc.bgwFetchData[2] = readBus(0x9000 + ((int8_t)getPpuContext()->pfc.bgwFetchData[0] * 16) + (mapY % 8) * 2 + 1);
-            }
+            getPpuContext()->pfc.bgwFetchData[1] = readBus(LCDC_BGW_DATA_AREA + (getPpuContext()->pfc.bgwFetchData[0] * 16) + (mapY % 8) * 2);
+            getPpuContext()->pfc.bgwFetchData[2] = readBus(LCDC_BGW_DATA_AREA + (getPpuContext()->pfc.bgwFetchData[0] * 16) + (mapY % 8) * 2 + 1);
 
             
             
@@ -337,14 +334,12 @@ void fakePush(){
         if(LCDC_BGW_ENABLE){
             getPpuContext()->pfc.bgwFetchData[0] = readBus(address + (mapX / 8) % 32 + ((((mapY / 8)) % 32) * 32));
 
-            if(BIT(getLcdContext()->lcdC, 4)) {
-                getPpuContext()->pfc.bgwFetchData[1] = readBus(0x8000 + (getPpuContext()->pfc.bgwFetchData[0] * 16) + (mapY % 8) * 2);
-                getPpuContext()->pfc.bgwFetchData[2] = readBus(0x8000 + (getPpuContext()->pfc.bgwFetchData[0] * 16) + (mapY % 8) * 2 + 1);
+            if(LCDC_BGW_DATA_AREA == 0x8800) {
+                getPpuContext()->pfc.bgwFetchData[0] += 128;
             }
-            else{
-                getPpuContext()->pfc.bgwFetchData[1] = readBus(0x9000 + ((int8_t)getPpuContext()->pfc.bgwFetchData[0] * 16) + (mapY % 8) * 2);
-                getPpuContext()->pfc.bgwFetchData[2] = readBus(0x9000 + ((int8_t)getPpuContext()->pfc.bgwFetchData[0] * 16) + (mapY % 8) * 2 + 1);
-            }
+
+            getPpuContext()->pfc.bgwFetchData[1] = readBus(LCDC_BGW_DATA_AREA + (getPpuContext()->pfc.bgwFetchData[0] * 16) +  (mapY % 8) * 2);
+            getPpuContext()->pfc.bgwFetchData[2] = readBus(LCDC_BGW_DATA_AREA + (getPpuContext()->pfc.bgwFetchData[0] * 16) +  (mapY % 8) * 2 + 1);
             
             int bit = 7 - (mapX % 8);
             u8 high = !!(getPpuContext()->pfc.bgwFetchData[1] & (1 << bit));
@@ -464,7 +459,7 @@ void processPipeline(){
     
    
     x = getPpuContext()->pushedFakePixels;
-    if(x + 7 == getLcdContext()->winX){
+    if(x + 7 >= getLcdContext()->winX){
         getPpuContext()->windowLatchX = true;
     }
     int windowY = getLcdContext()->winY;

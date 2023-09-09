@@ -42,6 +42,9 @@ u8 readLcd(u16 address){
     else if(address == 0xFF43){
         return LCD.scrollX;
     }
+    else if(address == 0xFF40){
+        return LCD.lcdC; /*% 144*/;
+    }
 
     u8 offset = (address - 0xFF40);
     u8 *p = (u8 *)&LCD;
@@ -86,6 +89,11 @@ void writeLcd(u16 address, u8 value){
         LCD.scrollX = value /*% 144*/;
         return;
     }
+    else if(address == 0xFF40){
+        LCD.lcdC = value /*% 144*/;
+        return;
+    }
+
     u8 offset = (address - 0xFF40);
     u8 *p = (u8 *)&LCD;
     p[offset] = value;

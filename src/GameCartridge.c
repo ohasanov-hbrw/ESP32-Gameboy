@@ -223,15 +223,15 @@ void writeToCartridge(u16 address, u8 value){
     
     //NO_IMPLEMENTATION
     if(address < 0x2000){
-        if(value & 0x0F == 0x0A){
+        if((value & 0x0F) == 0x0A){
             cartridge.ramEnable = true;
-            printf("\tENABLED RAM: 0x%04X 0x%02X\n", address, value);
+            //printf("\tENABLED RAM: 0x%04X 0x%02X\n", address, value);
             return;
             
         }
         else{
             cartridge.ramEnable = false;
-            printf("\tDISABLED RAM: 0x%04X 0x%02X\n", address, value);
+            //printf("\tDISABLED RAM: 0x%04X 0x%02X\n", address, value);
             return;
         }
     }
