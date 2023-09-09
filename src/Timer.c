@@ -31,21 +31,27 @@ void stepTimer(){
             updateTimer = (previousDiv & (1 << 7)) && (!(TIMER.div & (1 << 7)));
             break;
     }
+    if(TIMER.reload == 3){
+        TIMER.tima = TIMER.tma;
+    }
     if(TIMER.reload > 0){
         TIMER.reload--;
         return;
     }
     else if(TIMER.reload == 0){
-        TIMER.tima = TIMER.tma;
         TIMER.reload = -1;
         requestInterrupt(IT_TIMER);
     }
     if(updateTimer && TIMER.tac & (1 << 2)){
         if(TIMER.tima == 0xFF){
             TIMER.reload = 4;
+            TIMER.tima == 0x00;
             //printf("requested interrupt %d 0x%02X\n", TIMER.tima, TIMER.tac);
         }
-        TIMER.tima++;
+        else{
+            TIMER.tima++;
+        }
+        
     }
     //printf("Timer: %d %d %d %d\n", TIMER.div, TIMER.tima,TIMER.tma, TIMER.tac);
 }

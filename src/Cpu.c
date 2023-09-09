@@ -80,15 +80,15 @@ bool stepCpu(){
             CPU.registers.d, CPU.registers.e, CPU.registers.h, CPU.registers.l, CPU.destinationIsMemory, CPU.fetchedData);
         //if(CPU.currentInstruction->type == IN_HALT) exit(-8);
         updateDebug();
-        printDebug();
+        //printDebug();
 #endif
         /*execute();*/
         //exit(0);
-        if(CPU.currentOpcode == 0xFF){
+        /*if(CPU.currentOpcode == 0xFF){
             printf("wtf\n");
             exit(0);
 
-        }
+        }*/
         AccInstructionProcess accProcess = accInstructionGetProcessor(CPU.currentOpcode);
         if(!accProcess){
             printf("\tERR: UNAV PROC TYPE: 0x%02X\n", CPU.currentOpcode);

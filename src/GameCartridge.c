@@ -7,8 +7,8 @@ typedef struct{
     u32 ramSize;
     u8 *ramData;
     romHeader *header;
-    int romOffset;
-    int ramOffset;
+    u32 romOffset;
+    u32 ramOffset;
     bool ramEnable;
 }cartContext;
 
@@ -135,7 +135,7 @@ const char *getCartType(){
 bool loadCartridge(char *cart){
     cartridge.romOffset = 0;
     cartridge.ramOffset = 0;
-    cartridge.ramEnable = false;
+    cartridge.ramEnable = true;
     snprintf(cartridge.filename, sizeof(cartridge.filename), "%s", cart);
 
     FILE *fp = fopen(cart, "r");
@@ -174,7 +174,7 @@ bool loadCartridge(char *cart){
         cartridge.ramSize = 0;
     }
     else{
-        cartridge.ramSize = 0;
+        cartridge.ramSize = 8192 * 1;
         if(cartridge.header->ramSize == 0x02){
             cartridge.ramSize = 8192 * 1;
         }
@@ -188,9 +188,9 @@ bool loadCartridge(char *cart){
             cartridge.ramSize = 8192 * 8;
         }
         cartridge.ramData = malloc(cartridge.ramSize);
-        memset(cartridge.romData, 0, sizeof(cartridge.romData));
-        
+        memset(cartridge.ramData, 0, sizeof cartridge.ramData);
     }
+    
     printf("allocated %dByte of ram\n", cartridge.ramSize);
 
     u16 x = 0;
@@ -211,22 +211,34 @@ u8 readFromCartridge(u16 address){
         return cartridge.romData[address + cartridge.romOffset];
     }
     else if(address < 0xC000){
+        if(cartridge.ramEnable == false){
+            printf("\tERR DISABLED RAM RAM: 0x%04X 0x%02X\n", address);
+            return 0xFF;
+        }
         return cartridge.ramData[address - 0xA000];
     }
 }
 
 void writeToCartridge(u16 address, u8 value){
-    //printf("\tERR: WRT CART: 0x%04X 0x%02X\n", address, value);
+    
     //NO_IMPLEMENTATION
     if(address < 0x2000){
-        if(value == 0x00){
-            cartridge.ramEnable = false;
-        }
-        else if(value == 0x0A){
+        if(value & 0x0F == 0x0A){
             cartridge.ramEnable = true;
+            printf("\tENABLED RAM: 0x%04X 0x%02X\n", address, value);
+            return;
+            
+        }
+        else{
+            cartridge.ramEnable = false;
+            printf("\tDISABLED RAM: 0x%04X 0x%02X\n", address, value);
+            return;
         }
     }
     else if(address < 0x4000){
+        value = value & 0b00011111;
+		if (!value)
+			value = 1;
         u8 mask = 0b00011111;
         if(32 << cartridge.header->romSize == 256){
             mask = 0b00001111;
@@ -241,14 +253,14 @@ void writeToCartridge(u16 address, u8 value){
             mask = 0b00000001;
         }
         value &= mask;
-        if(value == 0x00){
-            value = 0x01;
-        }
+        
         cartridge.romOffset = 0x4000 * (value - 1);
-        //printf("changed bank to 0x%02x\n", value);
+        //printf("changed bank to 0x%08X  %d\n", 0x4000 + cartridge.romOffset, value);
+        return;
     }
-    else if(address < 0xC000 && address >= 0xA000){
+    else if(address >= 0xA000 && address < 0xC000 && cartridge.ramEnable == true){
         cartridge.ramData[address - 0xA000] = value;
+        return;
     }
 
 }
