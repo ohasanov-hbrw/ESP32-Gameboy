@@ -42,6 +42,10 @@ void initPpu(){
 }
 
 void stepPpu(){
+    if(LCDC_LCD_ENABLE == false){
+        PPU.vramLocked = false;
+        return;
+    }
     PPU.tCycles++;
     //printf("LCD LY = 0x%02X tCycles = %d", getLcdContext()->lY, PPU.tCycles);
     switch(LCDS_MODE){

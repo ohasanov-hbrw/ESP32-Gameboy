@@ -421,6 +421,9 @@ void fakePush(){
 
 
 void processPipeline(){
+    bool lastValueOfVramLock = getPpuContext()->vramLocked;
+    getPpuContext()->vramLocked = false;
+
     int x = getPpuContext()->pfc.pushedX;
     int y = getLcdContext()->lY;
     /*
@@ -485,6 +488,7 @@ void processPipeline(){
         fakePush();
         //if(getPpuContext()->tCycles - 80 > 172) printf("Line: %d  Cycles: %d  Pushed: %d  FIFO size after pushing: %d\n", y, getPpuContext()->tCycles - 80, getPpuContext()->pushedFakePixels, getPpuContext()->fetchedFakePixels);
     }
+    getPpuContext()->vramLocked = lastValueOfVramLock;
 }
 
 void pipelineFifoBackgroundReset(){

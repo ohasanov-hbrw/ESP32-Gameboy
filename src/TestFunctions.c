@@ -1045,7 +1045,10 @@ static void halt(cpuContext *CPU){
     waitForCPUCycle(1);
     CPU->halted = true;
     if(!CPU->interruptsEnabled){
-        CPU->execAgain = true;
+        if((readInterruptFlags() & readInterruptRegister() & 0x1F) != 0){
+            CPU->execAgain = true;
+            CPU->halted = false;
+        }
     }
 }
 
