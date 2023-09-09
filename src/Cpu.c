@@ -39,12 +39,12 @@ static void fetchInstruction(){
 }
 
 void incrementPc(){
-    if(CPU.execAgain){
-        CPU.execAgain = false;
-    }
-    else{
+    //if(CPU.execAgain){
+    //    CPU.execAgain = false;
+    //}
+    //else{
         CPU.registers.pc++;
-    }
+    //}
 }
 
 static void execute(){
