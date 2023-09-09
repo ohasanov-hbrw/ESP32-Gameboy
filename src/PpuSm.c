@@ -5,14 +5,19 @@
 #include <Interrupts.h>
 #include <string.h>
 
-void incrementLy(){ 
-    getLcdContext()->lY++;
 
+static u32 target_frame_time = 1000 / 260;
+static long prev_frame_time = 0;
+static long start_timer = 0;
+static long frame_count = 0;
+
+void incrementLy(){ 
+    
+    getLcdContext()->lY++;
     if(getPpuContext()->wasInWindow){
         getPpuContext()->windowLine++;
         getPpuContext()->wasInWindow = false;
     }
-
     if(getLcdContext()->lY == getLcdContext()->lYCompare){
         //printf("requested interrupt at line %d\n", getLcdContext()->lY);
         LCDS_LYC_SET(1);
@@ -62,10 +67,6 @@ void loadLineSprites(int i){
     }
 }
 
-static u32 target_frame_time = 1000 / 60;
-static long prev_frame_time = 0;
-static long start_timer = 0;
-static long frame_count = 0;
 
 void oamMode(){
     if(getLcdContext()->lY >= YRES){

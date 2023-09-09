@@ -33,7 +33,7 @@ void initPpu(){
     PPU.pushedFakePixels = 0;
     PPU.windowLatch = false;
     //BIT_SET(getLcdContext()->lcdC, 5, false);
-
+    PPU.vramLocked = false;
     initLcd();
     LCDS_MODE_SET(MODE_OAM);
 
@@ -47,18 +47,22 @@ void stepPpu(){
     switch(LCDS_MODE){
         case MODE_OAM:
             //printf(" MODE_OAM\n");
+            PPU.vramLocked = false;
             oamMode();
             break;
         case MODE_XFER:
             //printf(" MODE_XFER\n");
+            PPU.vramLocked = true;
             xferMode();
             break;
         case MODE_VBLANK:
             //printf(" MODE_VBLANK\n");
+            PPU.vramLocked = false;
             vblankMode();
             break;
         case MODE_HBLANK:
             //printf(" MODE_HBLANK\n");
+            PPU.vramLocked = false;
             hblankMode();
             break;
     }
@@ -81,10 +85,14 @@ u8 readOam(u16 address){
 }
 
 void writeVram(u16 address, u8 value){
+    /*if(PPU.vramLocked)
+        return;*/
     PPU.vram[address - 0x8000] = value;
 }
 
 u8 readVram(u16 address){
+    /*if(PPU.vramLocked)
+        return 0xFF;*/
     return PPU.vram[address - 0x8000];
 }
 

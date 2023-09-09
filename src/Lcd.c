@@ -1,6 +1,7 @@
 #include <Lcd.h>
 #include <Dma.h>
 #include <Ppu.h>
+#include <GameBoyEmulator.h>
 
 static lcdContext LCD = {0};
 
@@ -74,6 +75,7 @@ void updatePalette(u8 pdata, u8 pal) {
 void writeLcd(u16 address, u8 value){
     if(address == 0xFF4B){
         LCD.winX = value /*% 167*/;
+        
         return;
     }
     else if(address == 0xFF4A){

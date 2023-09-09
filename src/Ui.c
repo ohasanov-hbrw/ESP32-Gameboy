@@ -183,6 +183,7 @@ void uiOnKey(bool down, u32 key_code){
         case SDLK_DOWN: getGamepadState()->down = down; break;
         case SDLK_LEFT: getGamepadState()->left = down; break;
         case SDLK_RIGHT: getGamepadState()->right = down; break;
+        case SDLK_d: GetEmulatorContext()->debug = down; break;
     }
 }
 
@@ -203,6 +204,7 @@ void handleEventsUi(){
         if (e.type == SDL_KEYUP) {
             uiOnKey(false, e.key.keysym.sym);
         }
+
 
         if (e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_CLOSE) {
             GetEmulatorContext()->killEmu = true;

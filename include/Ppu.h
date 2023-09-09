@@ -100,6 +100,8 @@ typedef struct{
     bool wasInWindow;
     bool spriteFetchInProgress;
     bool advance;
+
+    bool vramLocked;
 }ppuContext;
 
 

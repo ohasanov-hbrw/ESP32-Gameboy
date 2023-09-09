@@ -11,7 +11,7 @@ int amogus = 0;
 int lastamogus = 0;
 
 
-#define DEBUG_CPU 0
+#define DEBUG_CPU 1
 
 cpuContext CPU = {0};
 
@@ -29,14 +29,23 @@ void initCpu(){
     CPU.interruptsEnabled = false;
     CPU.enablingInterrupts = false;
     getTimerContext()->div = 0xABCC;
+    CPU.execAgain = false;
 }
 
 static void fetchInstruction(){
-    CPU.currentOpcode = readBus(CPU.registers.pc++);
+    CPU.currentOpcode = readBus(CPU.registers.pc);
+    incrementPc();
     CPU.currentInstruction = getInstructionFromOpcode(CPU.currentOpcode);
 }
 
-
+void incrementPc(){
+    if(CPU.execAgain){
+        CPU.execAgain = false;
+    }
+    else{
+        CPU.registers.pc++;
+    }
+}
 
 static void execute(){
     //printf("\tTODO: EXEC NOT IMPL\n");
@@ -52,9 +61,8 @@ static void execute(){
 bool stepCpu(){
     if(!CPU.halted){
         u16 pc = CPU.registers.pc;
-        
-
-        CPU.currentOpcode = readBus(CPU.registers.pc++);
+        CPU.currentOpcode = readBus(CPU.registers.pc);
+        incrementPc();
         CPU.currentInstruction = getInstructionFromOpcode(CPU.currentOpcode);
         /*waitOneCycle();
         fetchInstruction();
@@ -64,23 +72,25 @@ bool stepCpu(){
         fetchData();*/
 
 #if DEBUG_CPU == 1
-        char flags[16];
-        sprintf(flags, "%c%c%c%c", 
-            CPU.registers.f & (1 << 7) ? 'Z' : '-',
-            CPU.registers.f & (1 << 6) ? 'N' : '-',
-            CPU.registers.f & (1 << 5) ? 'H' : '-',
-            CPU.registers.f & (1 << 4) ? 'C' : '-'
-        );
-        char inst[16];
-        instructionToString(&CPU, inst);
-        printf("INFO: %08lX - %04X: %-12s (%02X %02X %02X) A: %02X F: %s BC: %02X%02X DE: %02X%02X HL: %02X%02X DEST: %d FETCHED: 0x%02X\n", 
-            GetEmulatorContext()->ticks,
-            pc, inst, CPU.currentOpcode,
-            readBus(pc + 1), readBus(pc + 2), CPU.registers.a, flags, CPU.registers.b, CPU.registers.c,
-            CPU.registers.d, CPU.registers.e, CPU.registers.h, CPU.registers.l, CPU.destinationIsMemory, CPU.fetchedData);
-        //if(CPU.currentInstruction->type == IN_HALT) exit(-8);
-        updateDebug();
-        //printDebug();
+        if(GetEmulatorContext()->debug){
+            char flags[16];
+            sprintf(flags, "%c%c%c%c", 
+                CPU.registers.f & (1 << 7) ? 'Z' : '-',
+                CPU.registers.f & (1 << 6) ? 'N' : '-',
+                CPU.registers.f & (1 << 5) ? 'H' : '-',
+                CPU.registers.f & (1 << 4) ? 'C' : '-'
+            );
+            char inst[16];
+            instructionToString(&CPU, inst);
+            printf("INFO: %08lX - %04X: %-12s (%02X %02X %02X) A: %02X F: %s BC: %02X%02X DE: %02X%02X HL: %02X%02X\n", 
+                GetEmulatorContext()->ticks,
+                pc, inst, CPU.currentOpcode,
+                readBus(pc + 1), readBus(pc + 2), CPU.registers.a, flags, CPU.registers.b, CPU.registers.c,
+                CPU.registers.d, CPU.registers.e, CPU.registers.h, CPU.registers.l);
+            //if(CPU.currentInstruction->type == IN_HALT) exit(-8);
+            updateDebug();
+            //printDebug();
+        }
 #endif
         /*execute();*/
         //exit(0);
@@ -108,6 +118,7 @@ bool stepCpu(){
         handleInterrupts(&CPU);
         CPU.enablingInterrupts = false;
     }
+
     if(CPU.enablingInterrupts){
         CPU.interruptsEnabled = true;
     }

@@ -39,6 +39,8 @@ typedef struct{
 
     u8 interruptRegister;
     u8 interruptFlags;
+
+    bool execAgain;
 }cpuContext;
 
 void initCpu();
@@ -78,3 +80,5 @@ void setInterruptFlags(u8);
 void instructionToString(cpuContext *, char *);
 
 bool checkCondition(cpuContext *);
+
+void incrementPc();

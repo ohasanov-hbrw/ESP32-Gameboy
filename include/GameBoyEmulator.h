@@ -7,6 +7,8 @@ typedef struct{
     bool running;
     u64 ticks;
     bool killEmu;
+    bool debug;
+    bool pause;
 }EmulatorContext;
 
 int runEmulator(int argc, char **argv);

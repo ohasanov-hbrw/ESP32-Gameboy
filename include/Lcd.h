@@ -11,8 +11,8 @@ typedef struct{
     u8 dma;
     u8 bgp;
     u8 obp[2];
-    u8 winX;
     u8 winY;
+    u8 winX;
     u32 bgc[4];
     u32 spc1[4];
     u32 spc2[4];
