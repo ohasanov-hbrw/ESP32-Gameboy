@@ -2,6 +2,7 @@
 #include <string.h>
 #include <PpuSm.h>
 #include <Lcd.h>
+#include <Interrupts.h>
 
 static ppuContext PPU = {0};
 
@@ -39,6 +40,9 @@ void initPpu(){
     PPU.vramLocked = false;
     initLcd();
     LCDS_MODE_SET(MODE_OAM);
+    if(LCDS_STAT_INT(SS_OAM)){
+        requestInterrupt(IT_LCD_STAT);
+    }
     enabledLastTime = true;
     memset(PPU.oamRam, 0, sizeof(PPU.oamRam));
     memset(PPU.vBuffer, 0, YRES * XRES * sizeof(u32));

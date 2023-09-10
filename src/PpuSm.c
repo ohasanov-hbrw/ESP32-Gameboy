@@ -6,7 +6,7 @@
 #include <string.h>
 
 
-static u32 target_frame_time = 1000 / 260;
+static u32 target_frame_time = 1000 / 60;
 static long prev_frame_time = 0;
 static long start_timer = 0;
 static long frame_count = 0;
@@ -14,7 +14,7 @@ static long frame_count = 0;
 void incrementLy(){ 
     
     getLcdContext()->lY++;
-    
+
     if(getPpuContext()->wasInWindow){
         getPpuContext()->windowLine++;
         getPpuContext()->wasInWindow = false;
@@ -106,6 +106,7 @@ void oamMode(){
         getPpuContext()->lineSpriteCount = 0;
         getPpuContext()->currentIndexOfSprite = 0;
         memset(getPpuContext()->lineEntryArray, 0, sizeof(getPpuContext()->lineEntryArray));
+        
     }
     if(getPpuContext()->tCycles % 2 == 0){
         loadLineSprites(getPpuContext()->tCycles / 2  - 1);
@@ -131,6 +132,9 @@ void vblankMode(){
         getPpuContext()->wasInWindow = false;
         if (getLcdContext()->lY >= LINES_PER_FRAME){
             LCDS_MODE_SET(MODE_OAM);
+            if(LCDS_STAT_INT(SS_OAM)){
+                requestInterrupt(IT_LCD_STAT);
+            }
             getLcdContext()->lY = 0;
             getPpuContext()->windowLatch = false;
             getPpuContext()->windowLine = 0;
@@ -172,6 +176,9 @@ void hblankMode(){
         }
         else{
             LCDS_MODE_SET(MODE_OAM);
+            if(LCDS_STAT_INT(SS_OAM)){
+                requestInterrupt(IT_LCD_STAT);
+            }
         }
         getPpuContext()->tCycles = 0;
     }
