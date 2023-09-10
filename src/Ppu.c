@@ -5,6 +5,9 @@
 
 static ppuContext PPU = {0};
 
+bool enabledLastTime = true;
+
+
 ppuContext* getPpuContext(){
     return &PPU;
 }
@@ -36,7 +39,7 @@ void initPpu(){
     PPU.vramLocked = false;
     initLcd();
     LCDS_MODE_SET(MODE_OAM);
-
+    enabledLastTime = true;
     memset(PPU.oamRam, 0, sizeof(PPU.oamRam));
     memset(PPU.vBuffer, 0, YRES * XRES * sizeof(u32));
 }
@@ -44,7 +47,32 @@ void initPpu(){
 void stepPpu(){
     if(LCDC_LCD_ENABLE == false){
         PPU.vramLocked = false;
+        enabledLastTime = false;
+
+        PPU.tCycles = 0;
+
+        PPU.pfc.lineX = 0;
+        PPU.pfc.pushedX = 0;
+        PPU.pfc.fetchedX = 0;
+        PPU.pfc.currentFetchState = FS_TILE;
+        PPU.numberOfOp = 0;
+
+        PPU.lineSprites = 0;
+        PPU.fetchedEntryCount = 0;
+        PPU.windowLine = 0;
+        PPU.inWindow = false;
+        PPU.fetchedFakePixels = 0;
+        PPU.pushedFakePixels = 0;
+        PPU.windowLatch = false;
+        LCDS_MODE_SET(MODE_HBLANK);
+
         return;
+    }
+    if(LCDC_LCD_ENABLE == true && !enabledLastTime){
+        PPU.tCycles = 0;
+        
+        //LCDS_MODE_SET(MODE_OAM);
+        enabledLastTime = true;
     }
     PPU.tCycles++;
     //printf("LCD LY = 0x%02X tCycles = %d", getLcdContext()->lY, PPU.tCycles);

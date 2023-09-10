@@ -46,6 +46,9 @@ u8 readLcd(u16 address){
     else if(address == 0xFF40){
         return LCD.lcdC; /*% 144*/;
     }
+    else if(address == 0xFF41){
+        return LCD.lcdS;
+    }
 
     u8 offset = (address - 0xFF40);
     u8 *p = (u8 *)&LCD;
@@ -93,6 +96,16 @@ void writeLcd(u16 address, u8 value){
     }
     else if(address == 0xFF40){
         LCD.lcdC = value /*% 144*/;
+        if(BIT(getLcdContext()->lcdC, 7)){
+            //printf("hmm\n");
+        }
+        else{
+            printf("lcd is disabled\n");
+        }
+        return;
+    }
+    else if(address == 0xFF41){
+        LCD.lcdS = value;
         return;
     }
 

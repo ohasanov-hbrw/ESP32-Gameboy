@@ -215,6 +215,9 @@ u8 readFromCartridge(u16 address){
             printf("\tERR DISABLED RAM RAM: 0x%04X 0x%02X\n", address);
             return 0xFF;
         }
+        if(cartridge.ramSize == 0){
+            return 0xFF;
+        }
         return cartridge.ramData[address - 0xA000];
     }
 }
@@ -259,6 +262,11 @@ void writeToCartridge(u16 address, u8 value){
         return;
     }
     else if(address >= 0xA000 && address < 0xC000 && cartridge.ramEnable == true){
+        if(cartridge.ramSize == 0){
+            printf("illegal ram write?????\n");
+            return;
+            //exit(0);
+        }
         cartridge.ramData[address - 0xA000] = value;
         return;
     }

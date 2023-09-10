@@ -51,6 +51,16 @@ void stepTimer(){
         else{
             TIMER.tima++;
         }
+
+        //testing the old bad timer
+        /*
+        TIMER.tima++;
+
+        if (TIMER.tima == 0xFF) {
+            TIMER.tima = TIMER.tma;
+            requestInterrupt(IT_TIMER);
+        }*/
+
         
     }
     //printf("Timer: %d %d %d %d\n", TIMER.div, TIMER.tima,TIMER.tma, TIMER.tac);

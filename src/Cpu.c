@@ -39,10 +39,10 @@ static void fetchInstruction(){
 }
 
 void incrementPc(){
-    //if(CPU.execAgain){
-    //    CPU.execAgain = false;
-    //}
-    //else{
+    /*if(CPU.execAgain){
+        CPU.execAgain = false;
+    }
+    else{*/
         CPU.registers.pc++;
     //}
 }
@@ -87,7 +87,8 @@ bool stepCpu(){
                 pc, inst, CPU.currentOpcode,
                 readBus(pc + 1), readBus(pc + 2), CPU.registers.a, flags, CPU.registers.b, CPU.registers.c,
                 CPU.registers.d, CPU.registers.e, CPU.registers.h, CPU.registers.l);
-            //if(CPU.currentInstruction->type == IN_HALT) exit(-8);
+            //if(CPU.currentOpcode == 0x76) exit(-8);
+            //if(pc == 0x0B7F) exit(-8);
             updateDebug();
             //printDebug();
         }

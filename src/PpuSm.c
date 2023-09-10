@@ -14,10 +14,12 @@ static long frame_count = 0;
 void incrementLy(){ 
     
     getLcdContext()->lY++;
+    
     if(getPpuContext()->wasInWindow){
         getPpuContext()->windowLine++;
         getPpuContext()->wasInWindow = false;
     }
+
     if(getLcdContext()->lY == getLcdContext()->lYCompare){
         //printf("requested interrupt at line %d\n", getLcdContext()->lY);
         LCDS_LYC_SET(1);

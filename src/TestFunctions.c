@@ -2243,9 +2243,9 @@ static void ret_c(cpuContext *CPU){
 //0xD9
 static void reti(cpuContext *CPU){
     waitForCPUCycle(1);
-    CPU->interruptsEnabled = true;
     u16 low = popFromStack();
     waitForCPUCycle(1);
+    CPU->interruptsEnabled = true;
     u16 high = popFromStack();
     waitForCPUCycle(1);
     u16 value = (high << 8) | low;
@@ -2364,7 +2364,7 @@ static void and_a_u8(cpuContext *CPU){
     CPU->fetchedData = readBus(CPU->registers.pc);
     incrementPc();
     waitForCPUCycle(1);
-    setRegister(RT_A, readRegister(RT_A) & CPU->fetchedData);
+    setRegister(RT_A, readRegister(RT_A) & (CPU->fetchedData & 0xFF));
     cpuSetFlags(CPU, readRegister(RT_A) == 0, 0, 1, 0);
 }
 
@@ -2447,7 +2447,7 @@ static void ld_a_mffu8(cpuContext *CPU){
     CPU->fetchedData = readBus(CPU->registers.pc);
     incrementPc();
     waitForCPUCycle(1);
-    setRegister(RT_A, readBus(CPU->fetchedData | 0xFF00));
+    setRegister(RT_A, readBus((CPU->fetchedData & 0xFF) | 0xFF00));
     waitForCPUCycle(1);
 }
 
