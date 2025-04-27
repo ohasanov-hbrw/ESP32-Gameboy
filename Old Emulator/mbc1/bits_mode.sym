@@ -1,0 +1,91 @@
+; this file was created with wlalink by ville helin <ville.helin@iki.fi>.
+; wla symbolic information for "/home/runner/work/mooneye-test-suite/mooneye-test-suite/build/emulator-only/mbc1/bits_mode.gb".
+
+[information]
+version 2
+
+[labels]
+01:48ee clear_vram
+01:489f disable_ppu_safe
+01:48a5 disable_ppu_safe@wait_ly_0
+01:491e is_ppu_broken
+01:48f8 is_serial_broken
+01:48bd memcmp
+01:490c memcpy
+01:4915 memset
+01:48cb print_hex4
+01:4902 print_hex8
+01:4924 print_inline_string
+01:48d7 print_load_font
+01:48e3 print_newline
+01:488f print_string
+01:4897 print_string@char
+01:489a print_string@newline
+01:47f0 quit
+01:4806 quit@callback
+01:480a quit@cb_return
+01:4814 quit@wait_ly_1
+01:481a quit@wait_ly_2
+01:4820 quit@wait_ly_3
+01:4826 quit@wait_ly_4
+01:482c quit@report_result
+01:4830 quit@success
+01:483e quit@failure
+01:4846 quit@serial_dump
+01:484c quit@normal
+01:4866 quit@fast
+01:4878 quit@halt
+01:4879 quit@halt_execution_0
+01:487b reset_screen
+01:48ae serial_send_byte
+01:4000 font
+00:0150 main
+00:0153 test_round1
+00:0179 test_round1@quit_inline_1
+00:0193 test_round2
+00:01c8 test_round2@quit_inline_2
+00:01d9 copy_patterns
+00:021c bank0_pattern
+00:022c bank1_pattern
+00:023c bank2_pattern
+00:024c bank3_pattern
+00:025c fail_round2
+00:0266 fail_round2@quit_inline_3
+00:028c clear_ram
+00:ff80 hram.test_address
+00:ff80 hram.test_address_l
+00:ff81 hram.test_address_h
+00:ff80 RAM_USAGE_SLOT_4_BANK_0_START
+00:ff81 RAM_USAGE_SLOT_4_BANK_0_END
+
+[definitions]
+0000000a _sizeof_clear_vram
+0000000f _sizeof_disable_ppu_safe
+00000006 _sizeof_is_ppu_broken
+0000000a _sizeof_is_serial_broken
+0000000e _sizeof_memcmp
+00000009 _sizeof_memcpy
+00000009 _sizeof_memset
+0000000c _sizeof_print_hex4
+0000000a _sizeof_print_hex8
+00000006 _sizeof_print_inline_string
+0000000c _sizeof_print_load_font
+0000000b _sizeof_print_newline
+00000010 _sizeof_print_string
+0000008b _sizeof_quit
+00000014 _sizeof_reset_screen
+0000000f _sizeof_serial_send_byte
+000007f0 _sizeof_font
+00000002 _sizeof_hram.test_address
+00000001 _sizeof_hram.test_address_l
+00000001 _sizeof_hram.test_address_h
+00000001 _sizeof_RAM_USAGE_SLOT_4_BANK_0_START
+00000003 _sizeof_main
+00000040 _sizeof_test_round1
+00000046 _sizeof_test_round2
+00000043 _sizeof_copy_patterns
+00000010 _sizeof_bank0_pattern
+00000010 _sizeof_bank1_pattern
+00000010 _sizeof_bank2_pattern
+00000010 _sizeof_bank3_pattern
+00000030 _sizeof_fail_round2
