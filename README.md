@@ -11,4 +11,6 @@ https://github.com/ducalex/odroid-go-multi-firmware
 
 As the project itself is pin-compatible with the Odroid Go, you can also use the many available alternative firmwares with it.
 
+A new version of this project with more options for MCUs and readymade PCBs will be available on https://github.com/ohasanov-hbrw/tribit32-advanced
+
 Happy Building!
